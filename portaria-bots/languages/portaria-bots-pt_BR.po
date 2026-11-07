@@ -1,0 +1,398 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: Portaria\n"
+"Language: pt_BR\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+
+msgid "%d days"
+msgstr "%d dias"
+
+msgid "%s visits from fake bots"
+msgstr "%s visitas de bots falsos"
+
+msgid "402 responses"
+msgstr "Respostas 402"
+
+msgid "A cache answered before Portaria ran: bots on cached pages are not counted and do not pay."
+msgstr "Um cache respondeu antes da Portaria: bots em páginas em cache não são contados e não pagam."
+
+msgid "AI agents acting for a person"
+msgstr "Agentes de IA agindo por uma pessoa"
+
+msgid "AI search crawlers"
+msgstr "Crawlers de busca de IA"
+
+msgid "AI training crawlers"
+msgstr "Crawlers de treinamento de IA"
+
+msgid "Action"
+msgstr "Ação"
+
+msgid "Active: apply the rules, charging and blocking bots."
+msgstr "Ativo: aplica as regras, cobrando e bloqueando bots."
+
+msgid "Allow"
+msgstr "Liberar"
+
+msgid "Also show amounts in reais, using the Banco Central PTAX rate."
+msgstr "Mostrar valores também em reais, usando a cotação PTAX do Banco Central."
+
+msgid "Amount"
+msgstr "Valor"
+
+msgid "Automated access to %s"
+msgstr "Acesso automatizado a %s"
+
+msgid "Block"
+msgstr "Bloquear"
+
+msgid "Bot"
+msgstr "Bot"
+
+msgid "Bot visits"
+msgstr "Visitas de bots"
+
+msgid "Bots always pay in USDC. A price in reais is converted with the Banco Central PTAX rate of the day, rounded up."
+msgstr "Bots sempre pagam em USDC. Preço em reais é convertido pela cotação PTAX do dia, do Banco Central, arredondado para cima."
+
+msgid "Bots and payments"
+msgstr "Bots e pagamentos"
+
+msgid "Bots are reaching Portaria. They can be counted and charged."
+msgstr "Os bots estão chegando à Portaria. Podem ser contados e cobrados."
+
+msgid "Bots then reach PHP, which uses more server resources on sites with heavy crawling. Search engines stay cached."
+msgstr "Os bots passam a chegar ao PHP, o que usa mais recursos do servidor em sites muito rastreados. Buscadores continuam no cache."
+
+msgid "Change mode"
+msgstr "Mudar modo"
+
+msgid "Charge"
+msgstr "Cobrar"
+
+msgid "Check facilitator"
+msgstr "Verificar facilitator"
+
+msgid "Choose one only if your site is behind a proxy or CDN that sets this header. Otherwise bots could fake their address."
+msgstr "Escolha um só se o site estiver atrás de proxy ou CDN que define esse cabeçalho. Caso contrário, bots poderiam falsificar o endereço."
+
+msgid "Client IP header"
+msgstr "Cabeçalho de IP do cliente"
+
+msgid "Could not reach the facilitator."
+msgstr "Não foi possível contatar o facilitator."
+
+msgid "Create a new private URL"
+msgstr "Criar nova URL privada"
+
+msgid "Currency"
+msgstr "Moeda"
+
+msgid "Dashboard"
+msgstr "Painel"
+
+msgid "Default price per page"
+msgstr "Preço padrão por página"
+
+msgid "Detected:"
+msgstr "Detectado:"
+
+msgid "Diagnostics"
+msgstr "Diagnóstico"
+
+msgid "Exclude AI bot User-Agents from your cache or CDN, or turn on the page cache option in Settings if you use WP Rocket or LiteSpeed Cache, then test again."
+msgstr "Exclua os User-Agents de bots de IA do seu cache ou CDN, ou ative a opção de cache de página em Configurações se usar WP Rocket ou LiteSpeed Cache. Depois teste de novo."
+
+msgid "Export settled payments (CSV)"
+msgstr "Exportar pagamentos liquidados (CSV)"
+
+msgid "Facilitator"
+msgstr "Facilitator"
+
+msgid "Failed"
+msgstr "Falhou"
+
+msgid "Fake"
+msgstr "Falso"
+
+msgid "Fake bots"
+msgstr "Bots falsos"
+
+msgid "Follow its group"
+msgstr "Seguir o grupo"
+
+msgid "Free"
+msgstr "Grátis"
+
+msgid "From bot to payment"
+msgstr "Do bot ao pagamento"
+
+msgid "Group"
+msgstr "Grupo"
+
+msgid "I understand that crawlers that do not pay stop receiving my content. Major AI crawlers do not pay yet, so charging them can reduce how often AI assistants cite my site. Active mode needs this confirmation."
+msgstr "Entendo que crawlers que não pagam deixam de receber meu conteúdo. Os grandes crawlers de IA ainda não pagam, então cobrá-los pode reduzir as citações do meu site por assistentes de IA. O modo Ativo exige esta confirmação."
+
+msgid "Identity"
+msgstr "Identidade"
+
+msgid "Keep bot statistics for"
+msgstr "Manter estatísticas de bots por"
+
+msgid "Licensing contact"
+msgstr "Contato para licenciamento"
+
+msgid "Link previews"
+msgstr "Prévias de link"
+
+msgid "Mode"
+msgstr "Modo"
+
+msgid "Monitor mode: bots are counted and nothing is charged or blocked. Numbers below show what would happen. %s"
+msgstr "Modo Monitor: bots são contados e nada é cobrado nem bloqueado. Os números abaixo mostram o que aconteceria. %s"
+
+msgid "Monitor: count bots, change nothing for anyone."
+msgstr "Monitor: conta bots e não muda nada para ninguém."
+
+msgid "Network"
+msgstr "Rede"
+
+msgid "No bots counted in this period yet. If your site is behind a page cache, check the Diagnostics tab."
+msgstr "Nenhum bot contado neste período ainda. Se o site usa cache de página, confira a aba Diagnóstico."
+
+msgid "No test payment yet"
+msgstr "Nenhum pagamento de teste ainda"
+
+msgid "None: direct connection"
+msgstr "Nenhum: conexão direta"
+
+msgid "Not tested yet."
+msgstr "Ainda não testado."
+
+msgid "One rule per line, first match wins. Examples:"
+msgstr "Uma regra por linha; vale a primeira que casar. Exemplos:"
+
+msgid "Operator"
+msgstr "Operador"
+
+msgid "Optional. Email or URL included in 402 responses, so companies that prefer a license can reach you."
+msgstr "Opcional. E-mail ou URL incluído nas respostas 402, para empresas que preferem licenciar falarem com você."
+
+msgid "PTAX rate not available yet. Prices in reais are not charged until it is."
+msgstr "Cotação PTAX ainda indisponível. Preços em reais não são cobrados até ela chegar."
+
+msgid "PTAX: R$ %1$s per US$, from %2$s"
+msgstr "PTAX: R$ %1$s por US$, de %2$s"
+
+msgid "Page"
+msgstr "Página"
+
+msgid "Page cache"
+msgstr "Cache de página"
+
+msgid "Paid"
+msgstr "Pago"
+
+msgid "Payment attempts"
+msgstr "Tentativas de pagamento"
+
+msgid "Payments completed"
+msgstr "Pagamentos concluídos"
+
+msgid "Pending"
+msgstr "Pendente"
+
+msgid "Portaria counts automated visits per day. It does not store IP addresses or User-Agent strings, and it does not record human visitors. When a client pays through x402, its public wallet address and transaction hash are stored as a payment record."
+msgstr "A Portaria conta visitas automatizadas por dia. Não guarda endereços IP nem User-Agents e não registra visitantes humanos. Quando um cliente paga via x402, o endereço público da carteira e o hash da transação ficam guardados como registro de pagamento."
+
+msgid "Price"
+msgstr "Preço"
+
+msgid "Proves the entrance works, in any mode. Pay this private URL with any x402 client, using a wallet of your own. It charges the default price and is recorded apart from real traffic."
+msgstr "Prova que a entrada funciona, em qualquer modo. Pague esta URL privada com qualquer cliente x402, usando uma carteira sua. Ela cobra o preço padrão e fica registrada à parte do tráfego real."
+
+msgid "Public address that receives USDC directly. Portaria never holds funds. Never paste a private key or seed phrase here."
+msgstr "Endereço público que recebe USDC diretamente. A Portaria nunca guarda dinheiro. Nunca cole aqui uma chave privada ou frase-semente."
+
+msgid "Published IP lists: %1$d bots, updated %2$s"
+msgstr "Listas públicas de IP: %1$d bots, atualizadas em %2$s"
+
+msgid "Reais"
+msgstr "Reais"
+
+msgid "Recent payments"
+msgstr "Pagamentos recentes"
+
+msgid "Rule"
+msgstr "Regra"
+
+msgid "Rules"
+msgstr "Regras"
+
+msgid "Rules by bot"
+msgstr "Regras por bot"
+
+msgid "Rules by content"
+msgstr "Regras por conteúdo"
+
+msgid "Rules saved."
+msgstr "Regras salvas."
+
+msgid "SEO tools"
+msgstr "Ferramentas de SEO"
+
+msgid "Save rules"
+msgstr "Salvar regras"
+
+msgid "Save settings"
+msgstr "Salvar configurações"
+
+msgid "Scripts and unknown clients"
+msgstr "Scripts e clientes desconhecidos"
+
+msgid "Search engines"
+msgstr "Buscadores"
+
+msgid "Search engines, link previews and site services always pass. Blocking or charging AI search crawlers can remove your site from AI assistants' answers."
+msgstr "Buscadores, prévias de link e serviços do site sempre passam. Bloquear ou cobrar crawlers de busca de IA pode tirar seu site das respostas de assistentes de IA."
+
+msgid "Send known bots past the page cache (WP Rocket and LiteSpeed Cache) so they can be counted and charged."
+msgstr "Fazer bots conhecidos passarem por fora do cache de página (WP Rocket e LiteSpeed Cache) para serem contados e cobrados."
+
+msgid "Service that verifies payments and sends them to the blockchain. It cannot change the amount or the recipient. Contacted only when a client presents a payment."
+msgstr "Serviço que verifica pagamentos e os envia à blockchain. Não pode alterar o valor nem o destinatário. Só é contatado quando um cliente apresenta um pagamento."
+
+msgid "Set a rule for one bot. It overrides the group and content rules."
+msgstr "Defina uma regra para um bot. Ela vale acima das regras de grupo e de conteúdo."
+
+msgid "Set your wallet in Settings first."
+msgstr "Defina primeiro sua carteira em Configurações."
+
+msgid "Settings"
+msgstr "Configurações"
+
+msgid "Settings saved."
+msgstr "Configurações salvas."
+
+msgid "Site services"
+msgstr "Serviços do site"
+
+msgid "Some invalid prices were cleared. Those rules now use the default price."
+msgstr "Alguns preços inválidos foram apagados. Essas regras agora usam o preço padrão."
+
+msgid "Status"
+msgstr "Situação"
+
+msgid "Still in Monitor mode: Active mode needs a valid wallet and the confirmation checkbox."
+msgstr "Continua em modo Monitor: o modo Ativo exige carteira válida e a caixa de confirmação."
+
+msgid "Test now"
+msgstr "Testar agora"
+
+msgid "Test payment"
+msgstr "Pagamento de teste"
+
+msgid "Test payment: paid"
+msgstr "Pagamento de teste: pago"
+
+msgid "Tested %1$s on %2$s."
+msgstr "Testado %1$s em %2$s."
+
+msgid "That facilitator was not saved: it needs an https address."
+msgstr "Esse facilitator não foi salvo: precisa de endereço https."
+
+msgid "That wallet was not saved: an address starts with 0x and has 40 more letters and numbers."
+msgstr "Essa carteira não foi salva: o endereço começa com 0x e tem mais 40 letras e números."
+
+msgid "The default price was not changed: use a positive number with up to six decimals, like 0.01."
+msgstr "O preço padrão não mudou: use um número positivo com até seis casas decimais, como 0.01."
+
+msgid "The facilitator does not support the selected network."
+msgstr "O facilitator não aceita a rede selecionada."
+
+msgid "The facilitator supports the selected network."
+msgstr "O facilitator aceita a rede selecionada."
+
+msgid "The major AI crawlers do not pay per page yet. Each charge stays on record for when they do. Portaria does not promise income from bots."
+msgstr "Os grandes crawlers de IA ainda não pagam por página. Cada cobrança fica registrada para quando pagarem. A Portaria não promete renda com bots."
+
+msgid "The test could not reach this site from the server. Some hosts block these loopback requests, so this says nothing about your cache."
+msgstr "O teste não conseguiu acessar o site a partir do servidor. Algumas hospedagens bloqueiam esse tipo de requisição, então isso não diz nada sobre seu cache."
+
+msgid "These content rules were not understood and are being ignored: %s"
+msgstr "Estas regras de conteúdo não foram entendidas e estão sendo ignoradas: %s"
+
+msgid "Transaction"
+msgstr "Transação"
+
+msgid "Unknown"
+msgstr "Desconhecido"
+
+msgid "Unverifiable"
+msgstr "Não verificável"
+
+msgid "Update now"
+msgstr "Atualizar agora"
+
+msgid "Verification data"
+msgstr "Dados de verificação"
+
+msgid "Verification data updated."
+msgstr "Dados de verificação atualizados."
+
+msgid "Verified"
+msgstr "Verificado"
+
+msgid "View"
+msgstr "Ver"
+
+msgid "View transaction"
+msgstr "Ver transação"
+
+msgid "Visits"
+msgstr "Visitas"
+
+msgid "Web Bot Auth keys: %d hosts"
+msgstr "Chaves Web Bot Auth: %d hosts"
+
+msgid "What to do with each group"
+msgstr "O que fazer com cada grupo"
+
+msgid "When (UTC)"
+msgstr "Quando (UTC)"
+
+msgid "Who visited"
+msgstr "Quem visitou"
+
+msgid "Would receive a 402"
+msgstr "Receberiam 402"
+
+msgid "You are not allowed to do this."
+msgstr "Você não tem permissão para fazer isso."
+
+msgid "Your wallet"
+msgstr "Sua carteira"
+
+msgid "days"
+msgstr "dias"
+
+msgid "never"
+msgstr "nunca"
+
+msgid "none"
+msgstr "nenhum"
+
+msgid "received"
+msgstr "recebido"
+
+msgid "test"
+msgstr "teste"
+
+msgid "value if charged"
+msgstr "valor se cobrado"
+
+msgid "value of charged visits"
+msgstr "valor das visitas cobradas"

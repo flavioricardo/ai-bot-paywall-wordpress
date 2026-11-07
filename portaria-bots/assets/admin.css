@@ -1,0 +1,19 @@
+.portaria-top { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px; margin-top: 12px; }
+.portaria-top h2 { margin: 0; }
+.portaria-grid { display: grid; grid-template-columns: 2fr 1fr; gap: 12px; margin-top: 12px; }
+.portaria-box { background: #fff; border: 1px solid #c3c4c7; padding: 16px; margin-top: 12px; }
+.portaria-grid .portaria-box { margin-top: 0; }
+.portaria-box h3 { margin: 0 0 12px; font-size: 14px; }
+.portaria-step { display: flex; justify-content: space-between; gap: 12px; font-size: 13px; }
+.portaria-bar { height: 14px; background: #2271b1; margin: 3px 0 10px; }
+.portaria-big { font-size: 22px; font-weight: 600; line-height: 1.25; }
+.portaria-sub { color: #50575e; margin: 0 0 12px; }
+.portaria-ok { color: #00712e; font-weight: 600; }
+.portaria-bad { color: #b32d2e; font-weight: 600; }
+.portaria-rules { margin-bottom: 8px; }
+.portaria-inline { display: inline-block; margin: 4px 8px 0 0; }
+.portaria details summary { cursor: pointer; margin-bottom: 8px; }
+.portaria code { word-break: break-all; }
+@media (max-width: 782px) {
+	.portaria-grid { grid-template-columns: 1fr; }
+}

@@ -8,7 +8,7 @@
     "test:e2e": "node tests/e2e/run.mjs",
     "test:interop": "node tests/e2e/interop-real-facilitator.mjs",
     "build:i18n": "node tools/build-i18n.mjs",
-    "build:zip": "node tools/build-zip.mjs"
+    "build:zip": "node -e \"require('fs').mkdirSync('build',{recursive:true})\" && git archive --format=zip --prefix=portaria-bots/ -o build/portaria-bots.zip HEAD:portaria-bots"
   },
   "devDependencies": {
     "@php-wasm/node": "^3.1.62",

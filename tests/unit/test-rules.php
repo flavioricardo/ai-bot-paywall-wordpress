@@ -82,6 +82,7 @@ t_eq( null, Rules::to_atomic( '1e3', 'USD', null ), 'exponent' );
 t_eq( null, Rules::to_atomic( '0.05', 'BRL', null ), 'brl without rate cannot price' );
 t_eq( '10000', Rules::to_atomic( '0.05', 'BRL', 5.0 ), 'brl converted' );
 t_eq( '9154', Rules::to_atomic( '0.05', 'BRL', 5.4621 ), 'brl rounds up' );
-t_eq( '3', Rules::to_atomic( '0.00001', 'BRL', 5.0 ), 'brl exact stays exact, inexact rounds up' );
+t_eq( '2', Rules::to_atomic( '0.00001', 'BRL', 5.0 ), 'brl exact conversion stays exact' );
+t_eq( '4', Rules::to_atomic( '0.00001', 'BRL', 3.0 ), 'brl inexact conversion rounds up' );
 t_eq( '1', Rules::to_atomic( '0.000001', 'BRL', 5.0 ), 'brl floor one unit' );
 t_eq( 0.01, Rules::from_atomic( '10000' ), 'display' );

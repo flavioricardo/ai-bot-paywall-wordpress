@@ -4,6 +4,7 @@ define( 'PORTARIA_TESTING', true );
 error_reporting( E_ALL );
 ini_set( 'display_errors', '1' );
 
+define( 'ABSPATH', '/tmp/' );
 $GLOBALS['t_pass'] = 0;
 $GLOBALS['t_fail'] = 0;
 
@@ -18,7 +19,7 @@ function t_eq( $expected, $actual, string $label ): void {
 
 $dir = dirname( __DIR__, 2 ) . '/portaria-bots/includes/';
 foreach ( glob( $dir . 'class-*.php' ) as $file ) {
-	if ( preg_match( '/class-(catalog|net|rules|x402|web-bot-auth)\.php$/', $file ) ) {
+	if ( preg_match( '/class-(catalog|net|rules|x402|web-bot-auth|cache-compat|admin-actions)\.php$/', $file ) ) {
 		require_once $file;
 	}
 }
