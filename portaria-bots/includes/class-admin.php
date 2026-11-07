@@ -22,6 +22,10 @@ final class Admin {
 
 	public static function on_admin_init(): void {
 		Store::maybe_upgrade();
+		// Network activation runs only for the main site: finish setup on each site.
+		if ( ! wp_next_scheduled( CRON_HOOK ) ) {
+			activate();
+		}
 		if ( function_exists( 'wp_add_privacy_policy_content' ) ) {
 			wp_add_privacy_policy_content(
 				'Portaria',
@@ -127,6 +131,38 @@ final class Admin {
 		return $labels[ $class ] ?? $class;
 	}
 
+	/** @param array<string,mixed>|null $entry Catalog entry. */
+	private static function bot_name( ?array $entry, string $fallback ): string {
+		if ( null === $entry ) {
+			return $fallback;
+		}
+		$generic = array(
+			'no_ua'     => __( 'No User-Agent', 'portaria-bots' ),
+			'other_bot' => __( 'Other bot', 'portaria-bots' ),
+			'unknown'   => __( 'Unknown client', 'portaria-bots' ),
+			'payer'     => __( 'Paying client', 'portaria-bots' ),
+		);
+		return $generic[ $entry['key'] ] ?? (string) $entry['name'];
+	}
+
+	private static function network_label( string $key, string $label ): string {
+		return 'base-sepolia' === $key ? __( 'Base Sepolia (test network)', 'portaria-bots' ) : $label;
+	}
+
+	/** Warns when bots arrive through a proxy the owner has not told Portaria about. */
+	private static function render_proxy_warning(): void {
+		if ( '' !== Settings::get()['client_ip_header'] || (int) get_option( 'portaria_proxy_seen', 0 ) < time() - 7 * DAY_IN_SECONDS ) {
+			return;
+		}
+		echo '<div class="notice notice-warning inline"><p>';
+		printf(
+			/* translators: %s: link to settings. */
+			esc_html__( 'Your site seems to be behind a proxy or CDN, so Portaria cannot check bot addresses. Fake bots show as Unknown, and fake search engines read for free, until you choose the client IP header. %s', 'portaria-bots' ),
+			'<a href="' . esc_url( self::url( 'settings' ) ) . '">' . esc_html__( 'Open settings', 'portaria-bots' ) . '</a>'
+		);
+		echo '</p></div>';
+	}
+
 	private static function identity_label( string $identity ): string {
 		$labels = array(
 			Identity::VERIFIED => __( 'Verified', 'portaria-bots' ),
@@ -167,6 +203,8 @@ final class Admin {
 			);
 			echo '</p></div>';
 		}
+
+		self::render_proxy_warning();
 
 		echo '<div class="portaria-top"><h2>' . esc_html__( 'Bots and payments', 'portaria-bots' ) . '</h2><div class="portaria-periods">';
 		foreach ( array( 7, 30, 90 ) as $option ) {
@@ -259,9 +297,8 @@ final class Admin {
 		echo '</tr></thead><tbody>';
 
 		foreach ( $bots as $row ) {
-			$entry = Catalog::entry( $row['bot'] );
-			$name  = null !== $entry ? (string) $entry['name'] : $row['bot'];
-			$fake  = Identity::FAKE === $row['identity'];
+			$name = self::bot_name( Catalog::entry( $row['bot'] ), $row['bot'] );
+			$fake = Identity::FAKE === $row['identity'];
 			$rule  = Rules::decide(
 				array(
 					'bot_key'    => $row['bot'],
@@ -380,6 +417,7 @@ final class Admin {
 
 		echo '<h2>' . esc_html__( 'Rules by content', 'portaria-bots' ) . '</h2>';
 		echo '<p class="description">' . esc_html__( 'One rule per line, first match wins. Examples:', 'portaria-bots' ) . ' <code>path:/premium/ charge 0.05</code> <code>category:news allow</code> <code>type:page block</code></p>';
+		echo '<p class="description">' . esc_html__( 'Category and type rules apply to single posts and category pages. The home page, feeds and the REST API can show the same content and follow the group rules, so protect sensitive content with group rules too.', 'portaria-bots' ) . '</p>';
 		echo '<textarea name="content_rules" rows="6" class="large-text code" aria-label="' . esc_attr__( 'Rules by content', 'portaria-bots' ) . '">' . esc_textarea( (string) $settings['content_rules'] ) . '</textarea>';
 
 		echo '<h2>' . esc_html__( 'Rules by bot', 'portaria-bots' ) . '</h2><details><summary>' . esc_html__( 'Set a rule for one bot. It overrides the group and content rules.', 'portaria-bots' ) . '</summary>';
@@ -432,7 +470,7 @@ final class Admin {
 
 		echo '<tr><th><label for="portaria-network">' . esc_html__( 'Network', 'portaria-bots' ) . '</label></th><td><select id="portaria-network" name="network">';
 		foreach ( Settings::networks() as $key => $network ) {
-			printf( '<option value="%s"%s>%s</option>', esc_attr( $key ), selected( $settings['network'], $key, false ), esc_html( $network['label'] ) );
+			printf( '<option value="%s"%s>%s</option>', esc_attr( $key ), selected( $settings['network'], $key, false ), esc_html( self::network_label( $key, $network['label'] ) ) );
 		}
 		echo '</select></td></tr>';
 
@@ -444,7 +482,8 @@ final class Admin {
 		printf( '<input id="portaria-contact" type="text" class="regular-text" name="contact" value="%s">', esc_attr( $settings['contact'] ) );
 		echo '<p class="description">' . esc_html__( 'Optional. Email or URL included in 402 responses, so companies that prefer a license can reach you.', 'portaria-bots' ) . '</p></td></tr>';
 
-		echo '<tr><th><label for="portaria-ip">' . esc_html__( 'Client IP header', 'portaria-bots' ) . '</label></th><td><select id="portaria-ip" name="client_ip_header"><option value="">' . esc_html__( 'None: direct connection', 'portaria-bots' ) . '</option>';
+		echo '<tr><th><label for="portaria-ip">' . esc_html__( 'Client IP header', 'portaria-bots' ) . '</label></th><td><select id="portaria-ip" name="client_ip_header"><option value="">' . esc_html__( 'Not chosen yet', 'portaria-bots' ) . '</option>';
+		printf( '<option value="%s"%s>%s</option>', esc_attr( Net::DIRECT ), selected( $settings['client_ip_header'], Net::DIRECT, false ), esc_html__( 'None: no proxy or CDN in front of this site', 'portaria-bots' ) );
 		foreach ( array_keys( Net::CLIENT_IP_HEADERS ) as $header ) {
 			printf( '<option value="%s"%s>%s</option>', esc_attr( $header ), selected( $settings['client_ip_header'], $header, false ), esc_html( $header ) );
 		}
@@ -480,6 +519,7 @@ final class Admin {
 		$settings = Settings::get();
 
 		echo '<div class="portaria-box"><h3>' . esc_html__( 'Page cache', 'portaria-bots' ) . '</h3>';
+		self::render_proxy_warning();
 		$detected = Cache_Compat::detected();
 		echo '<p>' . esc_html__( 'Detected:', 'portaria-bots' ) . ' ' . esc_html( array() === $detected ? __( 'none', 'portaria-bots' ) : implode( ', ', $detected ) ) . '</p>';
 

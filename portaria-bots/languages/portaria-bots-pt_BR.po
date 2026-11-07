@@ -166,8 +166,35 @@ msgstr "Nenhum bot contado neste período ainda. Se o site usa cache de página,
 msgid "No test payment yet"
 msgstr "Nenhum pagamento de teste ainda"
 
-msgid "None: direct connection"
-msgstr "Nenhum: conexão direta"
+msgid "None: no proxy or CDN in front of this site"
+msgstr "Nenhum: não há proxy nem CDN na frente deste site"
+
+msgid "Not chosen yet"
+msgstr "Ainda não escolhido"
+
+msgid "No User-Agent"
+msgstr "Sem User-Agent"
+
+msgid "Other bot"
+msgstr "Outro bot"
+
+msgid "Unknown client"
+msgstr "Cliente desconhecido"
+
+msgid "Paying client"
+msgstr "Cliente pagante"
+
+msgid "Base Sepolia (test network)"
+msgstr "Base Sepolia (rede de teste)"
+
+msgid "Your site seems to be behind a proxy or CDN, so Portaria cannot check bot addresses. Fake bots show as Unknown, and fake search engines read for free, until you choose the client IP header. %s"
+msgstr "Seu site parece estar atrás de um proxy ou CDN, então a Portaria não consegue conferir o endereço dos bots. Bots falsos aparecem como Desconhecido, e buscadores falsos leem de graça, até você escolher o cabeçalho de IP do cliente. %s"
+
+msgid "Open settings"
+msgstr "Abrir configurações"
+
+msgid "Category and type rules apply to single posts and category pages. The home page, feeds and the REST API can show the same content and follow the group rules, so protect sensitive content with group rules too."
+msgstr "Regras de categoria e de tipo valem para posts individuais e páginas de categoria. A página inicial, os feeds e a API REST podem mostrar o mesmo conteúdo e seguem as regras de grupo, então proteja conteúdo sensível também com regras de grupo."
 
 msgid "Not tested yet."
 msgstr "Ainda não testado."

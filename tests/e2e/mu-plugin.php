@@ -3,6 +3,13 @@
  * Test-only control panel for the E2E suite. Never shipped with the plugin.
  */
 
+add_filter(
+	'locale',
+	static function ( $locale ) {
+		return get_option( 'e2e_locale' ) ?: $locale;
+	}
+);
+
 // Answers DNS questions without touching the network.
 add_filter(
 	'portaria_dns_ptr',
@@ -91,6 +98,8 @@ add_action(
 					'bots'     => \Portaria\Store::bots( 30 ),
 					'payments' => \Portaria\Store::recent_payments( 50 ),
 					'settings' => \Portaria\Settings::get(),
+					'wp'       => get_bloginfo( 'version' ),
+					'php'      => PHP_VERSION,
 				);
 				break;
 			case 'seed':

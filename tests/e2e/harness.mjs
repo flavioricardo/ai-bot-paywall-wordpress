@@ -63,6 +63,8 @@ export async function startWordPress({ port, php = '8.3', wp = 'latest' }) {
 	writeFileSync(
 		blueprintPath,
 		JSON.stringify({
+			// A blueprint without this silently overrides the --php flag.
+			preferredVersions: { php, wp },
 			steps: [
 				{ step: 'setSiteOptions', options: { permalink_structure: '/%postname%/', blogname: 'E2E Site' } },
 				{ step: 'writeFile', path: '/wordpress/wp-content/mu-plugins/portaria-e2e.php', data: readFileSync(path.join(root, 'tests/e2e/mu-plugin.php'), 'utf8') },

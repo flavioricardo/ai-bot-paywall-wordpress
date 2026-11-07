@@ -20,6 +20,7 @@ t_eq( '7.7.7.7', Net::client_ip( array( 'REMOTE_ADDR' => '1.2.3.4', 'HTTP_X_FORW
 t_eq( '1.2.3.4', Net::client_ip( array( 'REMOTE_ADDR' => '1.2.3.4', 'HTTP_X_REAL_IP' => 'bad' ), 'X-Real-IP' ), 'bad header falls back' );
 t_eq( '1.2.3.4', Net::client_ip( array( 'REMOTE_ADDR' => '1.2.3.4', 'HTTP_X_REAL_IP' => '9.9.9.9' ), 'Evil-Header' ), 'unknown setting ignored' );
 t_eq( '', Net::client_ip( array(), '' ), 'no address' );
+t_eq( '1.2.3.4', Net::client_ip( array( 'REMOTE_ADDR' => '1.2.3.4', 'HTTP_X_REAL_IP' => '9.9.9.9' ), Net::DIRECT ), 'direct ignores headers' );
 
 t_eq( true, Net::host_matches_suffix( 'crawl-66.googlebot.com.', array( 'googlebot.com' ) ), 'subdomain' );
 t_eq( true, Net::host_matches_suffix( 'googlebot.com', array( 'googlebot.com' ) ), 'exact host' );

@@ -22,6 +22,9 @@ final class Identity {
 	/** New reverse DNS lookups allowed per minute, so fake bots cannot stall PHP workers. */
 	const DNS_BUDGET = 30;
 
+	/** Signature checks allowed per minute. */
+	const SIGNATURE_BUDGET = 120;
+
 	/**
 	 * Verification order: signature, published IP list, reverse DNS.
 	 *
@@ -29,18 +32,12 @@ final class Identity {
 	 * @param array<string,string> $headers Lower-case request headers.
 	 */
 	public static function resolve( array $bot, string $ip, array $headers, string $authority ): string {
-		$has_method = false;
-
-		if ( ! empty( $bot['wba'] ) ) {
-			$has_method = true;
-			if ( self::signature_is_valid( $bot, $headers, $authority ) ) {
-				return self::VERIFIED;
-			}
+		if ( ! empty( $bot['wba'] ) && self::signature_is_valid( $bot, $headers, $authority ) ) {
+			return self::VERIFIED;
 		}
 
 		if ( ! empty( $bot['ranges'] ) ) {
-			$has_method = true;
-			$prefixes   = self::prefixes_for( (string) $bot['key'] );
+			$prefixes = self::prefixes_for( (string) $bot['key'] );
 			if ( array() === $prefixes ) {
 				return self::UNKNOWN;
 			}
@@ -56,7 +53,8 @@ final class Identity {
 			return self::check_reverse_dns( $ip, (array) $bot['rdns'] );
 		}
 
-		return $has_method ? self::FAKE : self::CLAIMED;
+		// A signature-only bot without a valid signature may just have unsigned requests.
+		return empty( $bot['wba'] ) ? self::CLAIMED : self::UNKNOWN;
 	}
 
 	/**
@@ -81,7 +79,8 @@ final class Identity {
 		foreach ( (array) ( is_array( $stored ) ? ( $stored[ $host ] ?? array() ) : array() ) as $keyid => $encoded ) {
 			$keys[ $keyid ] = (string) base64_decode( (string) $encoded, true );
 		}
-		if ( array() === $keys ) {
+		// Ed25519 in pure PHP is slow on hosts without libsodium: keep it from being a lever.
+		if ( array() === $keys || ! Budget::take( 'signature', self::SIGNATURE_BUDGET ) ) {
 			return false;
 		}
 

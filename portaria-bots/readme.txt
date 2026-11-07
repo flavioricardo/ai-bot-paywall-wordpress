@@ -2,7 +2,7 @@
 Contributors: flavioricardo
 Tags: ai crawlers, bots, x402, paywall, analytics
 Requires at least: 6.5
-Tested up to: 6.9
+Tested up to: 7.1
 Requires PHP: 7.4
 Stable tag: 0.1.0
 License: GPLv2 or later
@@ -41,8 +41,12 @@ If the page fails, nobody is charged. If settlement fails, no content is deliver
 = Known limits =
 
 * A scraper that copies a browser's User-Agent looks like a person. Any User-Agent based tool shares this limit.
-* Link preview and uptime services are free by default and are identified only by what they claim. You can set a rule per bot if this matters to you.
+* Link preview and uptime services, and search engines with no public verification method, are free by default and are identified only by what they claim. You can set a rule per bot for the first two.
 * Charging crawlers and clients that cannot pay means they receive no content.
+* Active mode gates every method except OPTIONS for bots and scripts. If your site receives webhooks on public pages, or a headless front end reads the REST API, allow them with a rule such as `path:/webhook/ allow` or a rule for the Scripts group.
+* Category and type rules apply to single posts and category pages. The home page, feeds and the REST API follow the group rules.
+* Reverse DNS checks run during the bot's request, at most 30 new lookups per minute, and slow DNS can delay those bot requests.
+* On Multisite each site has its own data and settings, and finishes setup the first time an admin opens its dashboard.
 * WP Rocket and LiteSpeed Cache integrations send known bots past the cache, which uses more server resources on sites with heavy crawling. You can turn this off.
 * Selling to someone abroad and receiving USDC can have tax and currency consequences where you live. They are yours to check with an accountant.
 
@@ -52,7 +56,7 @@ Portaria contacts these services. Nothing about your human visitors is ever sent
 
 = x402 facilitator =
 
-Verifies payments and submits them to the blockchain. By default, [PayAI](https://payai.network) at `facilitator.payai.network` ([terms](https://payai.network/terms), [privacy](https://payai.network/privacy)). You can use any facilitator, including your own.
+Verifies payments and submits them to the blockchain. By default, [PayAI](https://payai.network) at `facilitator.payai.network` ([documentation](https://docs.payai.network/introduction)). You can use any facilitator, including your own.
 
 It receives the signed payment, your wallet address, the price and the page URL, and is contacted **only when a client presents a payment**, or when you press "Check facilitator".
 
@@ -69,7 +73,7 @@ The public key file at `chatgpt.com/.well-known/http-message-signatures-director
 
 = Banco Central do Brasil =
 
-The public USD/BRL PTAX rate from `olinda.bcb.gov.br`, downloaded once a day and only if you show or set prices in reais ([terms and data policy](https://www.bcb.gov.br/acessoinformacao/legado?url=https:%2F%2Fwww.bcb.gov.br%2Fpt-br%2F%23!%2Fn%2FTERMOSUSO)).
+The public USD/BRL PTAX rate from `olinda.bcb.gov.br`, downloaded once a day and only if you show or set prices in reais ([open data portal](https://dadosabertos.bcb.gov.br/)).
 
 == Privacy ==
 

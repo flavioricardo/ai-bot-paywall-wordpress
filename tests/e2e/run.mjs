@@ -47,6 +47,8 @@ const fresh = async (settings = {}) => {
 
 try {
 	await control('settings', { wallet: WALLET, network: 'base-sepolia', facilitator: facilitator.url, client_ip_header: 'X-Real-IP', show_brl: false, mode: 'monitor' });
+	const version = (await dump()).php;
+	t.ok(version.startsWith(process.env.E2E_PHP ?? '8.3'), `running on the requested PHP (${version})`);
 	const seeded = await control('seed');
 	const POST = new URL(seeded.permalink).pathname;
 	const BODY = 'Secret article body';
@@ -144,7 +146,19 @@ try {
 	res = await visit('/?p=99999', { ua: GPTBOT, ip: '5.5.5.5' });
 	t.eq(res.status, 404, 'nothing to sell on a 404');
 	res = await visit(POST, { ua: GPTBOT, ip: '5.5.5.5', method: 'POST' });
-	t.ok(res.status !== 402, 'POST is not gated');
+	t.eq(res.status, 402, 'POST is not a way around');
+	res = await visit(POST, { method: 'POST' });
+	t.ok(res.status !== 402, 'people can still POST');
+	res = await visit(`${SINGLE}&preview=true`, { ua: GPTBOT, ip: '5.5.5.5' });
+	t.eq(res.status, 402, '?preview=true is not a way around');
+	res = await visit('/?rest_route=/WP/V2/posts', { ua: GPTBOT, ip: '5.5.5.5' });
+	t.eq(res.status, 402, 'REST route case is not a way around');
+	res = await visit('/?rest_route=/wp/v2/posts&_method=GET', { ua: GPTBOT, ip: '5.5.5.5', method: 'POST' });
+	t.eq(res.status, 402, 'REST method override is not a way around');
+	res = await visit(POST, { ua: 'Google-Site-Verification/1.0', ip: '66.249.66.1' });
+	t.eq(res.status, 200, 'Search Console verification passes');
+	res = await visit(POST, { ua: 'Mozilla/5.0 (Linux; Android 9; CUBOT X20) AppleWebKit/537.36 Chrome/120 Mobile Safari/537.36', ip: '5.5.5.5' });
+	t.eq(res.status, 200, 'person on a phone named CUBOT is not a bot');
 	res = await visit(POST, { ua: GPTBOT, ip: '5.5.5.5', method: 'OPTIONS' });
 	t.ok(res.status !== 402, 'preflight is not gated');
 	t.eq(facilitator.state.calls.length, 0, 'no payment presented, no outbound call');
@@ -311,12 +325,42 @@ try {
 	t.eq(res.status, 200, 'path rule frees an otherwise paid bot');
 	res = await visit(POST, { ua: 'Bytespider', ip: '5.5.5.5' });
 	t.eq(res.status, 403, 'bot rule wins over content rule');
+	await fresh({ content_rules: 'path:/premium/ charge 0.05' });
+	// Other spellings (%70, //, /index.php/) are rewritten or 404 before PHP in Playground,
+	// so normalize_path's unit tests cover them.
+	for (const dodge of ['/premium/a/', '/PREMIUM/a/']) {
+		res = await visit(dodge, { ua: SEARCHBOT, ip: '5.5.5.5' });
+		t.eq(res.headers.get('payment-required') ? decode(res.headers.get('payment-required')).accepts[0].amount : res.status, '50000', `path rule holds for ${dodge}`);
+	}
+	res = await visit('/premium-other/', { ua: SEARCHBOT, ip: '5.5.5.5' });
+	t.eq(res.status, 200, 'path rule stops at segment boundary');
+	await fresh({ bot_rules: { gptbot: { action: 'allow', price: '' } } });
+	await control('option', { portaria_ip_ranges: { gptbot: ['132.196.86.0/24'] } });
+	res = await visit(POST, { ua: GPTBOT, ip: '132.196.86.5' });
+	t.eq(res.status, 200, 'bot rule frees the real bot');
+	res = await visit(POST, { ua: GPTBOT, ip: '5.5.5.5' });
+	t.eq(res.status, 402, 'bot rule does not free an impostor');
+	await control('option', { portaria_ip_ranges: null });
 	await fresh({ content_rules: 'category:news charge 0.09' });
 	res = await visit(SINGLE, { ua: SEARCHBOT, ip: '5.5.5.5' });
 	t.eq(decode(res.headers.get('payment-required')).accepts[0].amount, '90000', 'category rule');
 	await fresh({ content_rules: 'type:post block' });
 	res = await visit(SINGLE, { ua: SEARCHBOT, ip: '5.5.5.5' });
 	t.eq(res.status, 403, 'post type rule');
+
+	t.section('Site behind a proxy nobody told Portaria about');
+	await fresh({ client_ip_header: '' });
+	res = await visit(POST, { ua: GOOGLEBOT, headers: { 'X-Forwarded-For': '66.249.66.1' } });
+	t.eq(res.status, 200, 'real Googlebot is not charged for a missing setting');
+	d = await dump();
+	t.ok(bot(d, 'googlebot', 'unknown'), 'marked unknown, not fake');
+	res = await visit(POST, { ua: GOOGLEBOT });
+	t.eq(res.status, 402, 'no proxy signs: a failed check still means fake');
+	res = await visit('/wp-admin/admin.php?page=portaria', { ua: CHROME });
+	await fresh({ client_ip_header: 'direct' });
+	res = await visit(POST, { ua: GOOGLEBOT, headers: { 'X-Forwarded-For': '66.249.66.1' } });
+	t.eq(res.status, 402, 'owner said no proxy: a spoofed header gains nothing');
+	await control('settings', { client_ip_header: 'X-Real-IP' });
 
 	t.section('Reais');
 	await control('option', { portaria_usd_brl: null });
@@ -391,8 +435,8 @@ try {
 	t.eq((await control('rocket_ua')).agents, [], 'bypass off: nothing added to WP Rocket');
 	await control('settings', { cache_bypass: true });
 	const agents = (await control('rocket_ua')).agents;
-	t.ok(agents.includes('GPTBot') && agents.includes('Screaming\\sFrog'), 'bypass on: tokens added to WP Rocket');
-	t.ok(!agents.includes('Googlebot'), 'search engines stay cached');
+	t.ok(agents.includes('(.*)GPTBot(.*)') && agents.includes('(.*)Screaming\\sFrog(.*)'), 'bypass on: tokens added to WP Rocket with its wildcards');
+	t.ok(!agents.includes('(.*)Googlebot(.*)'), 'search engines stay cached');
 	await control('option', { e2e_fake_cache: null });
 	res = await visit(POST, { ua: 'Mozilla/5.0 PortariaSelfTest/00000000000000000000000000000000' });
 	t.eq(res.headers.get('x-portaria-check'), null, 'self-test header needs the live token');
@@ -504,6 +548,16 @@ try {
 	t.ok(csv.startsWith('created_at_utc'), 'CSV export works');
 	t.ok(csv.includes(POST), 'CSV has the payment');
 	await control('settings', { mode: 'monitor' });
+
+	t.section('Brazilian Portuguese');
+	// WordPress refuses WPLANG without core's language pack, so force the locale instead.
+	await control('option', { e2e_locale: 'pt_BR' });
+	const translated = (await page('dashboard')).html;
+	t.ok(translated.includes('Bots e pagamentos'), 'dashboard is translated');
+	t.ok(translated.includes('Visitas de bots'), 'funnel is translated');
+	const translatedRules = (await page('rules')).html;
+	t.ok(translatedRules.includes('Salvar regras'), 'rules tab is translated');
+	await control('option', { e2e_locale: null });
 } finally {
 	wp.stop();
 	facilitator.close();

@@ -19,8 +19,15 @@ final class Cache_Compat {
 
 	public static function init(): void {
 		add_filter( 'rocket_cache_reject_ua', array( __CLASS__, 'add_rocket_user_agents' ) );
-		add_action( 'activated_plugin', array( __CLASS__, 'sync' ) );
-		add_action( 'deactivated_plugin', array( __CLASS__, 'sync' ) );
+		add_action( 'activated_plugin', array( __CLASS__, 'on_plugin_change' ) );
+		add_action( 'deactivated_plugin', array( __CLASS__, 'on_plugin_change' ) );
+	}
+
+	/** A cache plugin may have come or gone. Ignores this plugin: its hooks handle that. */
+	public static function on_plugin_change( string $plugin ): void {
+		if ( plugin_basename( FILE ) !== $plugin ) {
+			self::sync();
+		}
 	}
 
 	/**
@@ -33,7 +40,8 @@ final class Cache_Compat {
 			return $agents;
 		}
 		foreach ( Catalog::cache_bypass_tokens() as $token ) {
-			$agents[] = str_replace( ' ', '\\s', preg_quote( $token, '#' ) );
+			// Rocket's .htaccess condition is anchored, so tokens need its (.*) wildcards.
+			$agents[] = '(.*)' . Catalog::ua_pattern( $token ) . '(.*)';
 		}
 		return $agents;
 	}
@@ -41,11 +49,19 @@ final class Cache_Compat {
 	/** Applies the current choice to whichever cache is installed. */
 	public static function sync(): void {
 		self::refresh_rocket();
-		if ( ! empty( Settings::get()['cache_bypass'] ) && defined( 'LSCWP_V' ) ) {
+		if ( ! empty( Settings::get()['cache_bypass'] ) && self::litespeed_active() ) {
 			self::write_litespeed_rules();
 		} else {
 			self::remove_litespeed_rules();
 		}
+	}
+
+	/** Reads the plugin list, not LSCWP_V, which stays defined during its own deactivation. */
+	private static function litespeed_active(): bool {
+		if ( ! function_exists( 'is_plugin_active' ) ) {
+			require_once ABSPATH . 'wp-admin/includes/plugin.php';
+		}
+		return is_plugin_active( 'litespeed-cache/litespeed-cache.php' );
 	}
 
 	/** Undoes every change made outside the plugin's own data. */
@@ -102,7 +118,7 @@ final class Cache_Compat {
 		}
 	}
 
-	private static function remove_litespeed_rules(): void {
+	public static function remove_litespeed_rules(): void {
 		$path = self::htaccess_path();
 		if ( ! file_exists( $path ) || ! wp_is_writable( $path ) ) {
 			return;

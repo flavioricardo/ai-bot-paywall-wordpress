@@ -90,9 +90,10 @@ final class Rules {
 			return self::result( 'allow', '', 'search' );
 		}
 
+		// A rule for GPTBot is about the real GPTBot, not whoever borrows its name.
 		$bot_rules = (array) ( $settings['bot_rules'] ?? array() );
 		$bot_key   = (string) ( $request['bot_key'] ?? '' );
-		if ( isset( $bot_rules[ $bot_key ]['action'] ) && in_array( $bot_rules[ $bot_key ]['action'], self::ACTIONS, true ) ) {
+		if ( ! $is_fake && isset( $bot_rules[ $bot_key ]['action'] ) && in_array( $bot_rules[ $bot_key ]['action'], self::ACTIONS, true ) ) {
 			return self::result( $bot_rules[ $bot_key ]['action'], (string) ( $bot_rules[ $bot_key ]['price'] ?? '' ), 'bot', $default );
 		}
 
@@ -130,8 +131,29 @@ final class Rules {
 
 	/** Prefix match on whole path segments, so /pricing does not match /pricing-secret. */
 	private static function path_matches( string $path, string $prefix ): bool {
-		$trimmed = rtrim( $prefix, '/' );
+		$path    = self::normalize_path( $path );
+		$trimmed = rtrim( self::normalize_path( $prefix ), '/' );
 		return '' === $trimmed || $path === $trimmed || 0 === strpos( $path, $trimmed . '/' );
+	}
+
+	/**
+	 * Reduces a URL path to the form WordPress resolves, so a rule cannot be dodged with
+	 * %70remium, //premium, /./premium or /PREMIUM, which all reach the same content.
+	 */
+	public static function normalize_path( string $path ): string {
+		$decoded = strtolower( rawurldecode( $path ) );
+		$parts   = array();
+		foreach ( explode( '/', str_replace( '\\', '/', $decoded ) ) as $segment ) {
+			if ( '..' === $segment ) {
+				array_pop( $parts );
+			} elseif ( '' !== $segment && '.' !== $segment ) {
+				$parts[] = $segment;
+			}
+		}
+		if ( isset( $parts[0] ) && 'index.php' === $parts[0] ) {
+			array_shift( $parts );
+		}
+		return '/' . implode( '/', $parts ) . ( '/' === substr( $decoded, -1 ) && array() !== $parts ? '/' : '' );
 	}
 
 	/** @return array{action:string,price:string,source:string} */

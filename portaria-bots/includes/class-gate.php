@@ -22,7 +22,9 @@ final class Gate {
 		if ( self::handle_test_endpoint() ) {
 			return;
 		}
-		if ( is_404() || is_robots() || is_favicon() || is_trackback() || is_preview() || get_query_var( 'sitemap' ) ) {
+		// Nothing to sell on these. is_preview() must stay out: ?preview=true sets it for
+		// anyone, on published posts too, and logged-in authors already pass below.
+		if ( is_404() || is_robots() || is_favicon() || is_trackback() || get_query_var( 'sitemap' ) ) {
 			return;
 		}
 
@@ -47,8 +49,9 @@ final class Gate {
 		if ( ! defined( 'REST_REQUEST' ) || ! REST_REQUEST ) {
 			return;
 		}
+		// Case-insensitive, as the REST server's own route matching is.
 		$route = (string) ( $GLOBALS['wp']->query_vars['rest_route'] ?? '' );
-		if ( 0 === strpos( ltrim( $route, '/' ), 'wp/v2/' ) ) {
+		if ( 0 === stripos( ltrim( $route, '/' ), 'wp/v2/' ) ) {
 			self::handle( '', array(), 'application/json' );
 		}
 	}
@@ -57,8 +60,10 @@ final class Gate {
 	 * @param string[] $categories Category slugs of the requested content.
 	 */
 	private static function handle( string $post_type, array $categories, string $mime ): void {
+		// Only preflight passes: WordPress renders the same page for POST and other methods,
+		// and the REST API accepts method overrides, so gating GET alone is no gate at all.
 		$method = strtoupper( sanitize_text_field( wp_unslash( $_SERVER['REQUEST_METHOD'] ?? 'GET' ) ) );
-		if ( ! in_array( $method, array( 'GET', 'HEAD' ), true ) || is_user_logged_in() ) {
+		if ( 'OPTIONS' === $method || is_user_logged_in() ) {
 			return;
 		}
 
@@ -92,6 +97,13 @@ final class Gate {
 
 		if ( null === $identity ) {
 			$identity = Identity::resolve( $bot, $ip, $headers, $authority );
+
+			// Behind an unconfigured proxy the address is the proxy's, so a failed check
+			// proves nothing. Real Googlebot must not pay for a missing setting.
+			if ( Identity::FAKE === $identity && self::proxy_unconfigured( (string) $settings['client_ip_header'] ) ) {
+				$identity = Identity::UNKNOWN;
+				self::remember_proxy();
+			}
 		}
 
 		$content = Rules::parse_content_rules( (string) $settings['content_rules'] );
@@ -100,7 +112,7 @@ final class Gate {
 				'bot_key'    => $bot['key'],
 				'class'      => $bot['class'],
 				'identity'   => $identity,
-				'path'       => self::request_path(),
+				'path'       => self::content_path(),
 				'post_type'  => $post_type,
 				'categories' => $categories,
 			),
@@ -125,7 +137,7 @@ final class Gate {
 		}
 
 		if ( 'block' === $action['action'] ) {
-			nocache_headers();
+			Payment::prevent_caching();
 			status_header( 403 );
 			exit;
 		}
@@ -214,18 +226,56 @@ final class Gate {
 		return $headers;
 	}
 
-	/** Host the request was sent to, as RFC 9421 normalizes it. */
+	/**
+	 * This site's own host, as RFC 9421 normalizes it. Never the Host header: a client
+	 * could set it to replay a signature that a bot made for another site.
+	 */
 	private static function authority(): string {
-		$host = strtolower( sanitize_text_field( wp_unslash( $_SERVER['HTTP_HOST'] ?? '' ) ) );
-		return (string) preg_replace( '/:(80|443)$/', '', $host );
+		$parts = (array) wp_parse_url( home_url() );
+		$host  = strtolower( (string) ( $parts['host'] ?? '' ) );
+		return isset( $parts['port'] ) && ! in_array( (int) $parts['port'], array( 80, 443 ), true ) ? $host . ':' . $parts['port'] : $host;
 	}
 
-	/** Path of the request, without the query string. */
+	/** True when a proxy seems to be in front of the site and the owner has not said so. */
+	private static function proxy_unconfigured( string $header ): bool {
+		if ( '' !== $header ) {
+			return false;
+		}
+		foreach ( Net::CLIENT_IP_HEADERS as $server_key ) {
+			if ( isset( $_SERVER[ $server_key ] ) ) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	/** Lets the admin warn about it. Written at most once a day. */
+	private static function remember_proxy(): void {
+		if ( (int) get_option( 'portaria_proxy_seen', 0 ) < time() - DAY_IN_SECONDS ) {
+			update_option( 'portaria_proxy_seen', time(), false );
+		}
+	}
+
+	/** The URI up to the query string. Not parse_url: it reads //a/b as host "a". */
+	private static function raw_path(): string {
+		// phpcs:ignore WordPress.Security.ValidatedSanitizedInput -- Callers normalize or sanitize.
+		$uri = (string) wp_unslash( $_SERVER['REQUEST_URI'] ?? '/' );
+		return explode( '?', $uri, 2 )[0];
+	}
+
+	/** Path as content rules see it: normalized, and relative to where WordPress is installed. */
+	private static function content_path(): string {
+		$path = Rules::normalize_path( self::raw_path() );
+		$home = rtrim( Rules::normalize_path( (string) wp_parse_url( home_url(), PHP_URL_PATH ) ), '/' );
+		if ( '' !== $home && ( $path === $home || 0 === strpos( $path, $home . '/' ) ) ) {
+			$path = (string) substr( $path, strlen( $home ) );
+		}
+		return '' === $path ? '/' : $path;
+	}
+
+	/** Path of the request for payment records, without the query string. */
 	public static function request_path(): string {
-		// phpcs:ignore WordPress.Security.ValidatedSanitizedInput -- Validated by wp_parse_url and sanitize below.
-		$uri  = (string) wp_unslash( $_SERVER['REQUEST_URI'] ?? '/' );
-		$path = wp_parse_url( $uri, PHP_URL_PATH );
-		return is_string( $path ) ? sanitize_text_field( $path ) : '/';
+		return sanitize_text_field( self::raw_path() );
 	}
 
 	/** Canonical URL of the request, built on the site's own host rather than the Host header. */

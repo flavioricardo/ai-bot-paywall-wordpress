@@ -40,14 +40,16 @@ final class Payment {
 	 */
 	public static function process( array $request ): void {
 		$settings = Settings::get();
-		$network  = Settings::network();
-		$amount   = (string) $request['amount'];
-		$pay_to   = (string) $settings['wallet'];
-		$url      = Gate::request_url();
-		$mime     = (string) $request['mime'];
-		/* translators: %s: site name. */
-		$description = sprintf( __( 'Automated access to %s', 'portaria-bots' ), wp_specialchars_decode( get_bloginfo( 'name' ), ENT_QUOTES ) );
-		$is_live     = 'live' === $request['kind'];
+		$terms    = array(
+			'network'     => Settings::network(),
+			'amount'      => (string) $request['amount'],
+			'pay_to'      => (string) $settings['wallet'],
+			'url'         => Gate::request_url(),
+			'mime'        => (string) $request['mime'],
+			/* translators: %s: site name. */
+			'description' => sprintf( __( 'Automated access to %s', 'portaria-bots' ), wp_specialchars_decode( get_bloginfo( 'name' ), ENT_QUOTES ) ),
+		);
+		$is_live  = 'live' === $request['kind'];
 
 		self::prevent_caching();
 
@@ -56,17 +58,13 @@ final class Payment {
 			if ( $is_live ) {
 				Store::bump( $request['bot_key'], $request['class'], $request['identity'], array( 'challenged' => 1 ) );
 			}
-			self::reject( 402, 'PAYMENT-SIGNATURE header is required', $network, $amount, $pay_to, $url, $description, $mime );
+			self::send_challenge( 402, 'PAYMENT-SIGNATURE header is required', $terms );
+			exit;
 		}
 
 		$payment = X402::decode_payment( $raw );
 		if ( null === $payment ) {
-			self::reject( 400, 'invalid_payload', $network, $amount, $pay_to, $url, $description, $mime );
-		}
-
-		if ( ! Budget::take( 'facilitator', self::FACILITATOR_BUDGET ) ) {
-			status_header( 429 );
-			header( 'Retry-After: 60' );
+			self::send_challenge( 400, 'invalid_payload', $terms );
 			exit;
 		}
 
@@ -78,36 +76,40 @@ final class Payment {
 			'kind'          => (string) $request['kind'],
 			'bot'           => (string) $request['bot_key'],
 			'path'          => Gate::request_path(),
-			'amount_atomic' => $amount,
-			'network'       => $network['caip2'],
+			'amount_atomic' => $terms['amount'],
+			'network'       => $terms['network']['caip2'],
 			'payer'         => (string) ( $payment['payload']['authorization']['from'] ?? '' ),
 		);
+		$version = (int) $payment['x402Version'];
 
-		$mismatch = X402::check_payment( $payment, $network, $amount, $pay_to );
+		$mismatch = X402::check_payment( $payment, $terms['network'], $terms['amount'], $terms['pay_to'] );
 		if ( null !== $mismatch ) {
-			self::fail( $record, $mismatch, $network, $amount, $pay_to, $url, $description, $mime, (int) $payment['x402Version'] );
+			self::refuse( $record, $mismatch, $terms, $version );
 		}
 
-		$body     = X402::facilitator_body( $payment, $network, $amount, $pay_to, $url, $description, $mime );
+		// After the local check: payments that never reach the facilitator must not
+		// use up the budget and lock out real payers.
+		if ( ! Budget::take( 'facilitator', self::FACILITATOR_BUDGET ) ) {
+			status_header( 429 );
+			header( 'Retry-After: 60' );
+			exit;
+		}
+
+		$body     = X402::facilitator_body( $payment, $terms['network'], $terms['amount'], $terms['pay_to'], $terms['url'], $terms['description'], $terms['mime'] );
 		$verified = Facilitator::verify( $body );
 		if ( ! $verified['valid'] ) {
-			self::fail( $record, $verified['reason'], $network, $amount, $pay_to, $url, $description, $mime, (int) $payment['x402Version'] );
+			self::refuse( $record, $verified['reason'], $terms, $version );
 		}
 
 		// Valid so far: let WordPress build the page, then settle in finish().
 		ob_start();
 		self::$pending = array(
-			'level'       => ob_get_level(),
-			'request'     => $request,
-			'record'      => $record,
-			'body'        => $body,
-			'version'     => (int) $payment['x402Version'],
-			'network'     => $network,
-			'amount'      => $amount,
-			'pay_to'      => $pay_to,
-			'url'         => $url,
-			'description' => $description,
-			'mime'        => $mime,
+			'level'   => ob_get_level(),
+			'request' => $request,
+			'record'  => $record,
+			'body'    => $body,
+			'version' => $version,
+			'terms'   => $terms,
 		);
 		// Before core's own buffer flush at priority 1.
 		add_action( 'shutdown', array( __CLASS__, 'finish' ), 0 );
@@ -152,8 +154,10 @@ final class Payment {
 		);
 
 		if ( 'failed' === $settlement['status'] ) {
-			self::send_payment_response( $state['version'], $state['network'], $settlement );
-			self::reject( 402, $settlement['reason'], $state['network'], $state['amount'], $state['pay_to'], $state['url'], $state['description'], $state['mime'] );
+			self::send_payment_response( $state['version'], $state['terms']['network'], $settlement );
+			// No exit: this runs inside shutdown, and other plugins' hooks still need to run.
+			self::send_challenge( 402, $settlement['reason'], $state['terms'] );
+			return;
 		}
 
 		// Pending means the money may have moved, so the payer gets the page.
@@ -164,17 +168,20 @@ final class Payment {
 				$state['request']['identity'],
 				array(
 					'paid'        => 1,
-					'paid_atomic' => $state['amount'],
+					'paid_atomic' => $state['terms']['amount'],
 				)
 			);
 		}
 
 		header( 'Cache-Control: private, no-store' );
-		self::send_payment_response( $state['version'], $state['network'], $settlement );
+		self::send_payment_response( $state['version'], $state['terms']['network'], $settlement );
 		echo $content; // phpcs:ignore WordPress.Security.EscapeOutput -- Response WordPress already built.
 	}
 
-	/** @param array<string,string> $settlement Result of Facilitator::settle(). */
+	/**
+	 * @param array<string,string> $network    Entry from networks().
+	 * @param array<string,string> $settlement Result of Facilitator::settle().
+	 */
 	private static function send_payment_response( int $version, array $network, array $settlement ): void {
 		$data = array(
 			'success'     => 'failed' !== $settlement['status'],
@@ -197,12 +204,17 @@ final class Payment {
 		);
 	}
 
-	/** Records a refused payment and answers 402 with the reason. Does not return. */
-	private static function fail( array $record, string $reason, array $network, string $amount, string $pay_to, string $url, string $description, string $mime, int $version ): void {
+	/**
+	 * Records a refused payment and answers 402 with the reason. Does not return.
+	 *
+	 * @param array<string,string> $record Payment record so far.
+	 * @param array<string,mixed>  $terms  What this request costs.
+	 */
+	private static function refuse( array $record, string $reason, array $terms, int $version ): void {
 		Store::record_payment( $record + self::outcome( 'failed', $reason ) );
 		self::send_payment_response(
 			$version,
-			$network,
+			$terms['network'],
 			array(
 				'status'      => 'failed',
 				'transaction' => '',
@@ -210,12 +222,17 @@ final class Payment {
 				'reason'      => $reason,
 			)
 		);
-		self::reject( 402, $reason, $network, $amount, $pay_to, $url, $description, $mime );
+		self::send_challenge( 402, $reason, $terms );
+		exit;
 	}
 
-	/** Sends the x402 challenge. Does not return. */
-	private static function reject( int $status, string $error, array $network, string $amount, string $pay_to, string $url, string $description, string $mime ): void {
-		$challenge = X402::challenge( $network, $amount, $pay_to, $url, $description, $error, (string) Settings::get()['contact'], $mime );
+	/**
+	 * Sends the x402 challenge.
+	 *
+	 * @param array<string,mixed> $terms What this request costs.
+	 */
+	private static function send_challenge( int $status, string $error, array $terms ): void {
+		$challenge = X402::challenge( $terms['network'], $terms['amount'], $terms['pay_to'], $terms['url'], $terms['description'], $error, (string) Settings::get()['contact'], $terms['mime'] );
 
 		status_header( $status );
 		header_remove( 'Content-Length' );
@@ -223,15 +240,14 @@ final class Payment {
 		header( 'Cache-Control: no-store' );
 		header( 'PAYMENT-REQUIRED: ' . $challenge['header'] );
 		echo wp_json_encode( $challenge['body'], JSON_UNESCAPED_SLASHES );
-		exit;
 	}
 
-	/** Keeps every charged response out of page caches. */
-	private static function prevent_caching(): void {
+	/** Keeps a bot-specific response out of page caches. */
+	public static function prevent_caching(): void {
 		if ( ! defined( 'DONOTCACHEPAGE' ) ) {
 			define( 'DONOTCACHEPAGE', true );
 		}
 		nocache_headers();
-		do_action( 'litespeed_control_set_nocache', 'portaria: paid response' );
+		do_action( 'litespeed_control_set_nocache', 'portaria: bot-specific response' );
 	}
 }

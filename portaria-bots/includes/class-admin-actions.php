@@ -131,7 +131,7 @@ final class Admin_Actions {
 		$settings['retention_days'] = min( 3650, max( 30, $retention ) );
 
 		$header                       = (string) self::field( 'client_ip_header' );
-		$settings['client_ip_header'] = isset( Net::CLIENT_IP_HEADERS[ $header ] ) ? $header : '';
+		$settings['client_ip_header'] = isset( Net::CLIENT_IP_HEADERS[ $header ] ) || Net::DIRECT === $header ? $header : '';
 
 		$network = (string) self::field( 'network' );
 		if ( isset( Settings::networks()[ $network ] ) ) {
@@ -163,7 +163,10 @@ final class Admin_Actions {
 		if ( $previous !== $settings['cache_bypass'] ) {
 			Cache_Compat::sync();
 		}
-		Rates::refresh();
+		// Only the first time: after that the daily job keeps it current.
+		if ( null === Rates::usd_brl() ) {
+			Rates::refresh();
+		}
 		self::notice( 'success', __( 'Settings saved.', 'portaria-bots' ) );
 		self::back( 'settings' );
 	}

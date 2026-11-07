@@ -70,6 +70,22 @@ t_eq( array( 'allow', 'content' ), array( $d['action'], $d['source'] ), 'categor
 $d = Rules::decide( $req( 'ai_training', 'x', 'claimed', array( 'path' => '/a/', 'categories' => array(), 'post_type' => 'page' ) ), $settings, $rules );
 t_eq( 'block', $d['action'], 'type rule' );
 
+$fake_rule = array( 'bot_rules' => array( 'gptbot' => array( 'action' => 'allow', 'price' => '' ) ) ) + $settings;
+$d = Rules::decide( $req( 'ai_training', 'gptbot', 'verified' ), $fake_rule, $none );
+t_eq( 'allow', $d['action'], 'bot rule applies to the real bot' );
+$d = Rules::decide( $req( 'ai_training', 'gptbot', 'fake' ), $fake_rule, $none );
+t_eq( array( 'charge', '0.50' ), array( $d['action'], $d['price'] ), 'bot rule does not apply to an impostor' );
+
+foreach ( array( '/premium/a/', '/%70remium/a/', '//premium//a/', '/./premium/a/', '/x/../premium/a/', '/PREMIUM/a/', '/index.php/premium/a/', '\\premium\\a/' ) as $dodge ) {
+	t_eq( '/premium/a/', Rules::normalize_path( $dodge ), "normalize {$dodge}" );
+}
+t_eq( '/', Rules::normalize_path( '/' ), 'normalize root' );
+t_eq( '/', Rules::normalize_path( '' ), 'normalize empty' );
+t_eq( '/', Rules::normalize_path( '/index.php' ), 'normalize index' );
+t_eq( '/a', Rules::normalize_path( '/a' ), 'normalize keeps no trailing slash' );
+$d = Rules::decide( $req( 'ai_search', 'x', 'claimed', array( 'path' => '/%70remium/a/' ) ), $settings, $rules );
+t_eq( 'content', $d['source'], 'encoded path still matches' );
+
 t_eq( '10000', Rules::to_atomic( '0.01', 'USD', null ), 'usd cents' );
 t_eq( '1', Rules::to_atomic( '0.000001', 'USD', null ), 'smallest unit' );
 t_eq( '1500000', Rules::to_atomic( '1.5', 'USD', null ), 'whole and fraction' );

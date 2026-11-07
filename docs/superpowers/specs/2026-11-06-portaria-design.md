@@ -52,8 +52,9 @@ Flávio; publicar número inventado como dado real; guardar IP de visitante.
 Catálogo próprio por User-Agent. Classes: `search`, `social`, `service`
 (sempre liberadas), `ai_training`, `ai_search`, `ai_agent`, `seo`, `script`
 (controladas por política). Navegador sem assinatura de pagamento é humano e
-nunca é tocado. Humano logado, admin, POST, robots, sitemap, 404 e OPTIONS nunca
-passam pela portaria.
+nunca é tocado. Humano logado, admin, robots, sitemap, 404 e OPTIONS nunca passam
+pela portaria. POST e outros métodos passam: o WordPress renderiza a mesma página
+para eles, então ficar só em GET deixaria um desvio aberto.
 
 ### Identidade
 
@@ -62,13 +63,16 @@ passam pela portaria.
 - `unknown`: não deu para verificar agora (orçamento de DNS, faixas não baixadas).
 - `claimed`: bot sem método público de verificação.
 
-Buscador em `unknown` passa grátis: SEO vem antes de receita. Web Bot Auth só
+Buscador em `unknown` passa grátis: SEO vem antes de receita. Atrás de proxy não
+configurado, verificação que falha vira `unknown`, com aviso no painel; o dono
+resolve escolhendo o cabeçalho de IP ou declarando que não há proxy. Web Bot Auth só
 busca chaves em hosts do catálogo, nunca na URL enviada pelo cliente (SSRF).
 IP nunca é guardado em texto puro; cache de identidade usa HMAC com sal diário.
 
 ### Decisão
 
-Prioridade (Claude): classes sempre liberadas, depois regra por bot, regra de
+Prioridade (Claude): buscador não falso sempre libera, depois regra por bot (nunca
+para impostor), serviços e prévias de link, regra de
 conteúdo (`path:`, `category:`, `type:`; primeira que casar) e política da classe.
 Padrões ao ativar: treinamento cobra, busca de IA libera, agente cobra, SEO
 libera, script cobra, falso cobra (Claude). Liberar busca de IA evita tirar o

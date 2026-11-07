@@ -17,6 +17,7 @@ t_eq( 'base-sepolia', $c['body']['accepts'][0]['network'], 'v1 network' );
 t_eq( '10000', $c['body']['accepts'][0]['maxAmountRequired'], 'v1 amount' );
 t_eq( 'a@b.c', $c['body']['licensingContact'], 'contact' );
 t_eq( 'USD Coin', X402::networks()['base']['name'], 'mainnet domain differs' );
+t_eq( true, '' !== X402::challenge( $net, '1', $wallet, $url, "Bad \xB1 bytes", 'e' )['header'], 'invalid UTF-8 does not empty the header' );
 
 $auth = array(
 	'from'        => '0x857b06519E91e3A54538791bDbb0E22373e36b66',

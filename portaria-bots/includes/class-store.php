@@ -139,7 +139,7 @@ final class Store {
 	 */
 	public static function funnel( int $days ): array {
 		global $wpdb;
-		$sums = array();
+		$sums = array( "COALESCE(SUM(CASE WHEN identity = 'fake' THEN hits ELSE 0 END), 0) AS fake" );
 		foreach ( self::COUNTERS as $column ) {
 			$sums[] = "COALESCE(SUM({$column}), 0) AS {$column}";
 		}
@@ -149,18 +149,11 @@ final class Store {
 			ARRAY_A
 		);
 		// phpcs:enable
-		$totals = array_fill_keys( self::COUNTERS, 0 );
+		$totals = array_fill_keys( array_merge( self::COUNTERS, array( 'fake' ) ), 0 );
 		foreach ( (array) $row as $column => $value ) {
 			$totals[ $column ] = (int) $value;
 		}
-		$totals['fake'] = self::fake_hits( $days );
 		return $totals;
-	}
-
-	private static function fake_hits( int $days ): int {
-		global $wpdb;
-		// phpcs:ignore WordPress.DB.PreparedSQL
-		return (int) $wpdb->get_var( $wpdb->prepare( 'SELECT COALESCE(SUM(hits), 0) FROM ' . self::daily() . " WHERE day >= %s AND identity = 'fake'", self::since( $days ) ) );
 	}
 
 	/**
@@ -218,15 +211,9 @@ final class Store {
 		$wpdb->query(
 			$wpdb->prepare(
 				'DELETE FROM ' . self::payments() . " WHERE status = 'failed' AND created_at < %s",
-				gmdate( 'Y-m-d H:i:s', time() - 30 * DAY_IN_SECONDS )
+				gmdate( 'Y-m-d H:i:s', time() - 7 * DAY_IN_SECONDS )
 			)
 		);
 		// phpcs:enable
-	}
-
-	public static function drop_tables(): void {
-		global $wpdb;
-		// phpcs:ignore WordPress.DB.PreparedSQL,WordPress.DB.DirectDatabaseQuery.SchemaChange
-		$wpdb->query( 'DROP TABLE IF EXISTS ' . self::daily() . ', ' . self::payments() );
 	}
 }

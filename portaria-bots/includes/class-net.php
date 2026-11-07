@@ -19,6 +19,9 @@ final class Net {
 		'X-Forwarded-For'  => 'HTTP_X_FORWARDED_FOR',
 	);
 
+	/** Owner states there is no proxy, as opposed to not having chosen yet. */
+	const DIRECT = 'direct';
+
 	/**
 	 * Resolves the client IP. Only the configured proxy header is trusted.
 	 * For X-Forwarded-For the right-most address is the one the proxy appended;

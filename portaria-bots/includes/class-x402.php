@@ -133,7 +133,7 @@ final class X402 {
 
 	/** @param array<string,mixed> $data Payload. */
 	public static function encode( array $data ): string {
-		return base64_encode( (string) json_encode( $data, JSON_UNESCAPED_SLASHES ) );
+		return base64_encode( (string) json_encode( $data, JSON_UNESCAPED_SLASHES | JSON_INVALID_UTF8_SUBSTITUTE ) );
 	}
 
 	/**

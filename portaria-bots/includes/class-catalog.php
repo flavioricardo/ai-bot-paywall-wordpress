@@ -28,6 +28,16 @@ final class Catalog {
 	 * @return array<string,array<string,mixed>>
 	 */
 	public static function bots(): array {
+		// Runs on every page view, so build it once per request.
+		static $bots = null;
+		if ( null === $bots ) {
+			$bots = self::build();
+		}
+		return $bots;
+	}
+
+	/** @return array<string,array<string,mixed>> */
+	private static function build(): array {
 		$google = array( 'googlebot.com', 'google.com', 'googleusercontent.com' );
 		$bing   = array( 'search.msn.com' );
 
@@ -39,8 +49,20 @@ final class Catalog {
 			'storebot_google'   => array( 'token' => 'Storebot-Google', 'name' => 'Storebot-Google', 'class' => 'search', 'operator' => 'Google', 'rdns' => $google ),
 			'googleother'       => array( 'token' => 'GoogleOther', 'name' => 'GoogleOther', 'class' => 'search', 'operator' => 'Google', 'rdns' => $google ),
 			'googlebot'         => array( 'token' => 'Googlebot', 'name' => 'Googlebot', 'class' => 'search', 'operator' => 'Google', 'rdns' => $google ),
+			'feedfetcher'       => array( 'token' => 'FeedFetcher-Google', 'name' => 'Google FeedFetcher', 'class' => 'search', 'operator' => 'Google', 'rdns' => $google ),
+			// Google-Site-Verification and other fetchers. Search Console breaks if these pay.
+			'google_fetcher'    => array( 'token' => 'Google-', 'name' => 'Google fetcher', 'class' => 'search', 'operator' => 'Google', 'rdns' => $google ),
 			'bingbot'           => array( 'token' => 'bingbot', 'name' => 'Bingbot', 'class' => 'search', 'operator' => 'Microsoft', 'rdns' => $bing ),
+			'bingpreview'       => array( 'token' => 'BingPreview', 'name' => 'BingPreview', 'class' => 'search', 'operator' => 'Microsoft', 'rdns' => $bing ),
+			'msnbot'            => array( 'token' => 'msnbot', 'name' => 'msnbot', 'class' => 'search', 'operator' => 'Microsoft', 'rdns' => $bing ),
 			'adidxbot'          => array( 'token' => 'AdIdxBot', 'name' => 'AdIdxBot', 'class' => 'search', 'operator' => 'Microsoft', 'rdns' => $bing ),
+			'yahoo_slurp'       => array( 'token' => 'Slurp', 'name' => 'Yahoo Slurp', 'class' => 'search', 'operator' => 'Yahoo' ),
+			'seznambot'         => array( 'token' => 'SeznamBot', 'name' => 'SeznamBot', 'class' => 'search', 'operator' => 'Seznam' ),
+			'naver_yeti'        => array( 'token' => 'Yeti/', 'name' => 'Naver Yeti', 'class' => 'search', 'operator' => 'Naver' ),
+			'qwant'             => array( 'token' => 'Qwant', 'name' => 'Qwant', 'class' => 'search', 'operator' => 'Qwant' ),
+			'sogou'             => array( 'token' => 'Sogou', 'name' => 'Sogou', 'class' => 'search', 'operator' => 'Sogou' ),
+			'mojeekbot'         => array( 'token' => 'MojeekBot', 'name' => 'MojeekBot', 'class' => 'search', 'operator' => 'Mojeek' ),
+			'coccocbot'         => array( 'token' => 'coccocbot', 'name' => 'coccocbot', 'class' => 'search', 'operator' => 'Cốc Cốc' ),
 			'applebot'          => array( 'token' => 'Applebot', 'name' => 'Applebot', 'class' => 'search', 'operator' => 'Apple', 'rdns' => array( 'applebot.apple.com' ) ),
 			'duckduckbot'       => array( 'token' => 'DuckDuckBot', 'name' => 'DuckDuckBot', 'class' => 'search', 'operator' => 'DuckDuckGo' ),
 			'yandexbot'         => array( 'token' => 'YandexBot', 'name' => 'YandexBot', 'class' => 'search', 'operator' => 'Yandex', 'rdns' => array( 'yandex.ru', 'yandex.net', 'yandex.com' ) ),
@@ -168,7 +190,9 @@ final class Catalog {
 			}
 		}
 
-		if ( preg_match( '/bot\b|crawl|spider|scrape/i', $ua ) ) {
+		// Deliberately strict: "CUBOT X20" is a phone, and its owner must not get a 402.
+		// Bots announce themselves as Name/1.0, inside "compatible;", or with a +URL.
+		if ( preg_match( '#(?:bot|crawler|spider|scraper)[\w-]*/\d|compatible;[^)]*(?:bot|crawl|spider|scrape)|\+https?://#i', $ua ) ) {
 			return self::entry( 'other_bot' );
 		}
 
@@ -212,12 +236,13 @@ final class Catalog {
 		return $tokens;
 	}
 
-	/** Apache-compatible alternation of the given tokens. */
+	/** A token as a regular expression that is safe in PHP and Apache rewrite rules. */
+	public static function ua_pattern( string $token ): string {
+		return str_replace( ' ', '\\s', preg_quote( $token, '#' ) );
+	}
+
+	/** Alternation of the given tokens. */
 	public static function ua_alternation( array $tokens ): string {
-		$quoted = array();
-		foreach ( $tokens as $token ) {
-			$quoted[] = str_replace( ' ', '\\s', preg_quote( $token, '#' ) );
-		}
-		return '(' . implode( '|', $quoted ) . ')';
+		return '(' . implode( '|', array_map( array( __CLASS__, 'ua_pattern' ), $tokens ) ) . ')';
 	}
 }
