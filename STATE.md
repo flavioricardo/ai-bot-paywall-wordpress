@@ -8,7 +8,7 @@
 
 ## Status
 
-- **Fase:** primeira versão (0.1.0) completa e testada localmente, em PR no GitHub, ainda sem merge.
+- **Fase:** primeira versão (0.1.0) completa e na `main`. Falta validar em site real.
 - **No ar:** repositório público `flavioricardo/ai-bot-paywall-wordpress`. Plugin ainda não enviado ao WordPress.org. Slug do plugin: `ai-bot-paywall`.
 
 ## Decisões
