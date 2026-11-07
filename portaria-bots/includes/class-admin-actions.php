@@ -153,9 +153,11 @@ final class Admin_Actions {
 		}
 
 		$mode = 'active' === self::field( 'mode' ) ? 'active' : 'monitor';
-		if ( 'active' === $mode && ( ! X402::is_address( (string) $settings['wallet'] ) || ! $settings['ack_ai'] ) ) {
+		// The IP choice is required because an unchosen setting makes proxy headers soften
+		// failed identity checks, which a fake search engine could exploit.
+		if ( 'active' === $mode && ( ! X402::is_address( (string) $settings['wallet'] ) || ! $settings['ack_ai'] || '' === $settings['client_ip_header'] ) ) {
 			$mode = 'monitor';
-			self::notice( 'error', __( 'Still in Monitor mode: Active mode needs a valid wallet and the confirmation checkbox.', 'portaria-bots' ) );
+			self::notice( 'error', __( 'Still in Monitor mode: Active mode needs a valid wallet, the confirmation checkbox and a choice for the client IP header.', 'portaria-bots' ) );
 		}
 		$settings['mode'] = $mode;
 

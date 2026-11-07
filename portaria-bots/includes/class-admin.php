@@ -24,7 +24,7 @@ final class Admin {
 		Store::maybe_upgrade();
 		// Network activation runs only for the main site: finish setup on each site.
 		if ( ! wp_next_scheduled( CRON_HOOK ) ) {
-			activate();
+			setup_site();
 		}
 		if ( function_exists( 'wp_add_privacy_policy_content' ) ) {
 			wp_add_privacy_policy_content(

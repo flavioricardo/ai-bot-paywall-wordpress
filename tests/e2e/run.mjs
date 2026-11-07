@@ -492,6 +492,9 @@ try {
 	d = await dump();
 	t.eq(d.settings.mode, 'active', 'keeps the previous valid wallet');
 	t.eq(d.settings.wallet, WALLET, 'invalid wallet not saved');
+	res = await post(base_fields({ mode: 'active', ack_ai: '1', client_ip_header: '' }));
+	d = await dump();
+	t.eq(d.settings.mode, 'monitor', 'Active mode refused until the proxy question is answered');
 	res = await post(base_fields({ mode: 'monitor', facilitator: 'http://evil.example/' }));
 	d = await dump();
 	t.eq(d.settings.facilitator, facilitator.url, 'plain HTTP facilitator refused');
@@ -558,6 +561,14 @@ try {
 	const translatedRules = (await page('rules')).html;
 	t.ok(translatedRules.includes('Salvar regras'), 'rules tab is translated');
 	await control('option', { e2e_locale: null });
+
+	t.section('Deactivate and uninstall leave nothing behind');
+	const gone = await control('uninstall');
+	t.eq(gone.htaccess_block_after_deactivate, false, 'deactivation removes the cache rules');
+	t.eq(gone.user_rules_kept, true, 'other .htaccess rules are kept');
+	t.eq(gone.tables, [], 'uninstall drops the tables');
+	t.eq(gone.settings, false, 'uninstall removes the settings');
+	t.eq(gone.cron, false, 'uninstall clears the schedule');
 } finally {
 	wp.stop();
 	facilitator.close();

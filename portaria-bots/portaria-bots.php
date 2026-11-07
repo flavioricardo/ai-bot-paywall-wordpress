@@ -32,13 +32,18 @@ const CRON_HOOK = 'portaria_daily_event';
 /** Sets up tables, defaults and scheduled work. Never changes how the site responds. */
 function activate(): void {
 	Store::maybe_upgrade();
+	setup_site();
+	Cache_Compat::sync();
+}
+
+/** Per-site setup. Also runs from the admin, because network activation only reaches the main site. */
+function setup_site(): void {
 	Settings::ensure_defaults();
 	if ( ! wp_next_scheduled( CRON_HOOK ) ) {
 		wp_schedule_event( time() + DAY_IN_SECONDS, 'daily', CRON_HOOK );
+		// Fetch verification data soon, without slowing this request down.
+		wp_schedule_single_event( time() + 10, CRON_HOOK );
 	}
-	// Fetch verification data soon, without slowing activation down.
-	wp_schedule_single_event( time() + 10, CRON_HOOK );
-	Cache_Compat::sync();
 }
 register_activation_hook( __FILE__, __NAMESPACE__ . '\\activate' );
 

@@ -313,8 +313,8 @@ msgstr "Alguns preços inválidos foram apagados. Essas regras agora usam o pre�
 msgid "Status"
 msgstr "Situação"
 
-msgid "Still in Monitor mode: Active mode needs a valid wallet and the confirmation checkbox."
-msgstr "Continua em modo Monitor: o modo Ativo exige carteira válida e a caixa de confirmação."
+msgid "Still in Monitor mode: Active mode needs a valid wallet, the confirmation checkbox and a choice for the client IP header."
+msgstr "Continua em modo Monitor: o modo Ativo exige carteira válida, a caixa de confirmação e uma escolha para o cabeçalho de IP do cliente."
 
 msgid "Test now"
 msgstr "Testar agora"

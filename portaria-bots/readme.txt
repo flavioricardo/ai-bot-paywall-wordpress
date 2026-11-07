@@ -83,7 +83,7 @@ Portaria stores daily counts per bot. It does not store IP addresses, User-Agent
 
 1. Install and activate. Portaria starts in Monitor mode.
 2. Watch the Dashboard for a few days, and run the page cache test under Diagnostics.
-3. To charge, add your wallet's public address in Settings, confirm the warning and switch to Active. Never paste a private key.
+3. To charge, add your wallet's public address in Settings, say whether a proxy or CDN sits in front of the site, confirm the warning and switch to Active. Never paste a private key.
 4. Make a test payment from the Diagnostics tab.
 
 If your site is behind Cloudflare or another proxy, set the client IP header so verification sees the real address.

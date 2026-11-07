@@ -118,6 +118,27 @@ add_action(
 					'permalink' => get_permalink( $id ),
 				);
 				break;
+			case 'uninstall':
+				require_once ABSPATH . 'wp-admin/includes/file.php';
+				require_once ABSPATH . 'wp-admin/includes/plugin.php';
+				$path = get_home_path() . '.htaccess';
+				file_put_contents( $path, \Portaria\Cache_Compat::litespeed_block( array( 'GPTBot' ) ) . "# BEGIN WordPress\nkeep\n# END WordPress\n" );
+				// LiteSpeed is absent here, so sync removes the block just as deactivation must.
+				deactivate_plugins( 'portaria-bots/portaria-bots.php' );
+				$after = (string) file_get_contents( $path );
+				$out   = array(
+					'htaccess_block_after_deactivate' => false !== strpos( $after, 'BEGIN Portaria' ),
+					'user_rules_kept'                 => false !== strpos( $after, 'keep' ),
+				);
+				if ( ! defined( 'WP_UNINSTALL_PLUGIN' ) ) {
+					define( 'WP_UNINSTALL_PLUGIN', 'portaria-bots/portaria-bots.php' );
+				}
+				include WP_PLUGIN_DIR . '/portaria-bots/uninstall.php';
+				wp_cache_flush();
+				$out['tables']   = array_values( array_filter( array_map( static function ( $t ) { return $t; }, (array) $wpdb->get_col( "SHOW TABLES LIKE '%portaria%'" ) ) ) );
+				$out['settings'] = get_option( 'portaria_settings' );
+				$out['cron']     = wp_next_scheduled( 'portaria_daily_event' );
+				break;
 			case 'selftest':
 				$out = \Portaria\Cache_Compat::run_self_test();
 				break;
