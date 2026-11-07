@@ -38,7 +38,11 @@ final class Net {
 		if ( ! filter_var( $ip, FILTER_VALIDATE_IP ) ) {
 			$ip = (string) ( $server['REMOTE_ADDR'] ?? '' );
 		}
-		return filter_var( $ip, FILTER_VALIDATE_IP ) ? $ip : '';
+		if ( ! filter_var( $ip, FILTER_VALIDATE_IP ) ) {
+			return '';
+		}
+		// Dual-stack servers report IPv4 clients as ::ffff:1.2.3.4, which would fail every check.
+		return 0 === stripos( $ip, '::ffff:' ) && filter_var( substr( $ip, 7 ), FILTER_VALIDATE_IP, FILTER_FLAG_IPV4 ) ? substr( $ip, 7 ) : $ip;
 	}
 
 	/** Whether an IP falls inside a CIDR prefix. Works for IPv4 and IPv6. */

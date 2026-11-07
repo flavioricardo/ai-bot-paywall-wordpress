@@ -22,9 +22,9 @@ final class Gate {
 		if ( self::handle_test_endpoint() ) {
 			return;
 		}
-		// Nothing to sell on these. is_preview() must stay out: ?preview=true sets it for
-		// anyone, on published posts too, and logged-in authors already pass below.
-		if ( is_404() || is_robots() || is_favicon() || is_trackback() || get_query_var( 'sitemap' ) ) {
+		// Nothing to sell on these. is_preview() and is_trackback() must stay out: visitors
+		// can set them on any URL, and ?tb=1&feed=rss2 still serves the feed.
+		if ( is_404() || is_robots() || is_favicon() || get_query_var( 'sitemap' ) ) {
 			return;
 		}
 
@@ -275,7 +275,8 @@ final class Gate {
 
 	/** Path of the request for payment records, without the query string. */
 	public static function request_path(): string {
-		return sanitize_text_field( self::raw_path() );
+		// Printable ASCII only: keeps %C3%A9 intact, and byte truncation cannot split a character.
+		return (string) preg_replace( '/[^\x21-\x7E]/', '', self::raw_path() );
 	}
 
 	/** Canonical URL of the request, built on the site's own host rather than the Host header. */

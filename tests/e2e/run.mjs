@@ -151,6 +151,10 @@ try {
 	t.ok(res.status !== 402, 'people can still POST');
 	res = await visit(`${SINGLE}&preview=true`, { ua: GPTBOT, ip: '5.5.5.5' });
 	t.eq(res.status, 402, '?preview=true is not a way around');
+	res = await visit('/?tb=1&feed=rss2', { ua: GPTBOT, ip: '5.5.5.5' });
+	t.eq(res.status, 402, 'trackback flag on a feed is not a way around');
+	res = await visit(POST, { ua: GOOGLEBOT, ip: '::ffff:66.249.66.1' });
+	t.eq(res.status, 200, 'real Googlebot on a dual-stack server passes');
 	res = await visit('/?rest_route=/WP/V2/posts', { ua: GPTBOT, ip: '5.5.5.5' });
 	t.eq(res.status, 402, 'REST route case is not a way around');
 	res = await visit('/?rest_route=/wp/v2/posts&_method=GET', { ua: GPTBOT, ip: '5.5.5.5', method: 'POST' });

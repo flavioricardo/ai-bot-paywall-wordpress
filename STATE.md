@@ -8,8 +8,8 @@
 
 ## Status
 
-- **Fase:** primeira versão (0.1.0) completa e testada localmente, no branch `feat/plugin-v1`. Sem remoto.
-- **No ar:** nada. Nem GitHub nem WordPress.org.
+- **Fase:** primeira versão (0.1.0) completa e testada localmente, em PR no GitHub, ainda sem merge.
+- **No ar:** repositório público `flavioricardo/ai-bot-paywall-wordpress`. Plugin ainda não enviado ao WordPress.org. Slug do plugin: `ai-bot-paywall`.
 
 ## Decisões
 
@@ -25,6 +25,6 @@
 
 ## Pendências
 
-- [ ] **Criar repo público e abrir PR de `feat/plugin-v1`**: `gh repo create flavioricardo/ai-bot-paywall-wordpress --public`, depois incluir em `rollout-projects.txt` do claude-config e no `ROLLOUT_TOKEN` | [humano] aprovar publicação
+- [ ] **Incluir o repo na automação de regras base**: adicionar `flavioricardo/ai-bot-paywall-wordpress` em `rollout-projects.txt` do claude-config e no `ROLLOUT_TOKEN` | [humano] token
 - [ ] **Testar num site real com WP Rocket ou LiteSpeed**: rodar Diagnóstico → Testar agora; se falhar, ajustar o padrão em `class-cache-compat.php` | [humano] precisa de site e licença
 - [ ] **Fazer pagamento real de centavos**: `PAY_TEST_PRIVATE_KEY=... node tools/pay-test.mjs "<URL de teste>"`, com carteira própria na Base | [humano] envolve dinheiro. Antes de enviar ao WordPress.org, confirmar termos e privacidade da PayAI (https://payai.network): os links antigos dão 404

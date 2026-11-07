@@ -44,6 +44,7 @@ If the page fails, nobody is charged. If settlement fails, no content is deliver
 * Link preview and uptime services, and search engines with no public verification method, are free by default and are identified only by what they claim. You can set a rule per bot for the first two.
 * Charging crawlers and clients that cannot pay means they receive no content.
 * Active mode gates every method except OPTIONS for bots and scripts. If your site receives webhooks on public pages, or a headless front end reads the REST API, allow them with a rule such as `path:/webhook/ allow` or a rule for the Scripts group.
+* Files in the uploads folder, such as PDFs and images, are served by the web server without running WordPress, so they are not counted or charged.
 * Category and type rules apply to single posts and category pages. The home page, feeds and the REST API follow the group rules.
 * Reverse DNS checks run during the bot's request, at most 30 new lookups per minute, and slow DNS can delay those bot requests.
 * On Multisite each site has its own data and settings, and finishes setup the first time an admin opens its dashboard.
