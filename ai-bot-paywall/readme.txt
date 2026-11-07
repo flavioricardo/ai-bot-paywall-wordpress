@@ -1,4 +1,4 @@
-=== Portaria: AI Bot Ledger and x402 Paywall ===
+=== AI Bot Paywall: See, Verify and Charge Bots with x402 ===
 Contributors: flavioricardo
 Tags: ai crawlers, bots, x402, paywall, analytics
 Requires at least: 6.5
@@ -12,16 +12,16 @@ See every bot that reads your site, tell real crawlers from fake ones, and charg
 
 == Description ==
 
-Portaria ("front desk" in Portuguese) shows who is reading your site automatically and lets you decide what each one gets.
+AI Bot Paywall shows who is reading your site automatically and lets you decide what each one gets.
 
-**Be clear about what pays today.** Clients that speak x402 pay. The major AI crawlers (GPTBot, ClaudeBot, PerplexityBot and others) do not pay per page yet, so a site that charges them simply stops serving them. Portaria does not promise income from bots. What it gives you from day one is real data about who takes what.
+**Be clear about what pays today.** Clients that speak x402 pay. The major AI crawlers (GPTBot, ClaudeBot, PerplexityBot and others) do not pay per page yet, so a site that charges them simply stops serving them. AI Bot Paywall does not promise income from bots. What it gives you from day one is real data about who takes what.
 
 = What it does =
 
 * **Counts bots, by day.** Who visited, how often, and under which rule.
 * **Spots fake bots.** Search engines and crawlers are checked by Web Bot Auth signature, published IP list or forward-confirmed reverse DNS.
 * **Starts in Monitor mode.** Nothing changes for anyone until you switch. You see what would have been charged first.
-* **Charges through x402.** v2 and v1 clients, USDC on Base, paid straight to your wallet. Portaria never holds money and takes no cut.
+* **Charges through x402.** v2 and v1 clients, USDC on Base, paid straight to your wallet. AI Bot Paywall never holds money and takes no cut.
 * **Keeps SEO safe.** Search engines that are not proven fake always read for free.
 * **Works with page caches.** Integrates with WP Rocket and LiteSpeed Cache, and a built-in test detects any other cache or CDN hiding bots from the plugin.
 * **Proves it works.** A private test URL lets you make a real payment and see the transaction on the dashboard.
@@ -32,7 +32,7 @@ Portaria ("front desk" in Portuguese) shows who is reading your site automatical
 
 1. A bot requests a page and receives `402 Payment Required` with the price, token and your wallet.
 2. It signs a USDC transfer authorization and retries.
-3. Portaria checks the payment and asks the facilitator to verify it.
+3. AI Bot Paywall checks the payment and asks the facilitator to verify it.
 4. WordPress builds the page.
 5. Only then does the facilitator settle on-chain, and the page is delivered.
 
@@ -52,7 +52,7 @@ If the page fails, nobody is charged. If settlement fails, no content is deliver
 
 == External services ==
 
-Portaria contacts these services. Nothing about your human visitors is ever sent.
+AI Bot Paywall contacts these services. Nothing about your human visitors is ever sent.
 
 = x402 facilitator =
 
@@ -77,11 +77,11 @@ The public USD/BRL PTAX rate from `olinda.bcb.gov.br`, downloaded once a day and
 
 == Privacy ==
 
-Portaria stores daily counts per bot. It does not store IP addresses, User-Agent strings or anything about human visitors. Reverse DNS results are cached briefly under a key that changes daily and cannot be turned back into an address. When a client pays, its public wallet address and transaction hash are kept as the payment record.
+AI Bot Paywall stores daily counts per bot. It does not store IP addresses, User-Agent strings or anything about human visitors. Reverse DNS results are cached briefly under a key that changes daily and cannot be turned back into an address. When a client pays, its public wallet address and transaction hash are kept as the payment record.
 
 == Installation ==
 
-1. Install and activate. Portaria starts in Monitor mode.
+1. Install and activate. AI Bot Paywall starts in Monitor mode.
 2. Watch the Dashboard for a few days, and run the page cache test under Diagnostics.
 3. To charge, add your wallet's public address in Settings, say whether a proxy or CDN sits in front of the site, confirm the warning and switch to Active. Never paste a private key.
 4. Make a test payment from the Diagnostics tab.

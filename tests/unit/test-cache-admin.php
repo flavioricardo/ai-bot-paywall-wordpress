@@ -1,10 +1,10 @@
 <?php
-use Portaria\Admin_Actions;
-use Portaria\Cache_Compat;
+use AIBotPaywall\Admin_Actions;
+use AIBotPaywall\Cache_Compat;
 
 $block = Cache_Compat::litespeed_block( array( 'GPTBot', 'Screaming Frog' ) );
 t_eq(
-	"# BEGIN Portaria\n<IfModule LiteSpeed>\nRewriteEngine on\nRewriteCond %{HTTP_USER_AGENT} (GPTBot|Screaming\\sFrog) [NC]\nRewriteRule .* - [E=Cache-Control:no-cache]\n</IfModule>\n# END Portaria\n",
+	"# BEGIN AI Bot Paywall\n<IfModule LiteSpeed>\nRewriteEngine on\nRewriteCond %{HTTP_USER_AGENT} (GPTBot|Screaming\\sFrog) [NC]\nRewriteRule .* - [E=Cache-Control:no-cache]\n</IfModule>\n# END AI Bot Paywall\n",
 	$block,
 	'litespeed block'
 );

@@ -3,10 +3,10 @@
  * The gate: runs on public GET requests, classifies the client and applies the rule.
  * Regular visitors pass through untouched.
  *
- * @package Portaria
+ * @package AIBotPaywall
  */
 
-namespace Portaria;
+namespace AIBotPaywall;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -179,7 +179,7 @@ final class Gate {
 	 */
 	private static function handle_test_endpoint(): bool {
 		// phpcs:ignore WordPress.Security.NonceVerification -- Public URL authorized by its own secret token.
-		$given = isset( $_GET['portaria_test'] ) ? sanitize_text_field( wp_unslash( $_GET['portaria_test'] ) ) : '';
+		$given = isset( $_GET['aibotpaywall_test'] ) ? sanitize_text_field( wp_unslash( $_GET['aibotpaywall_test'] ) ) : '';
 		if ( '' === $given ) {
 			return false;
 		}
@@ -207,7 +207,7 @@ final class Gate {
 		echo wp_json_encode(
 			array(
 				'ok'      => true,
-				'message' => 'Portaria test payment received.',
+				'message' => 'AI Bot Paywall test payment received.',
 			)
 		);
 		exit;
@@ -251,8 +251,8 @@ final class Gate {
 
 	/** Lets the admin warn about it. Written at most once a day. */
 	private static function remember_proxy(): void {
-		if ( (int) get_option( 'portaria_proxy_seen', 0 ) < time() - DAY_IN_SECONDS ) {
-			update_option( 'portaria_proxy_seen', time(), false );
+		if ( (int) get_option( 'aibotpaywall_proxy_seen', 0 ) < time() - DAY_IN_SECONDS ) {
+			update_option( 'aibotpaywall_proxy_seen', time(), false );
 		}
 	}
 
@@ -285,6 +285,6 @@ final class Gate {
 		$parts  = (array) wp_parse_url( home_url() );
 		$origin = ( $parts['scheme'] ?? 'https' ) . '://' . ( $parts['host'] ?? '' ) . ( isset( $parts['port'] ) ? ':' . $parts['port'] : '' );
 		// The test token must not be echoed back in the challenge.
-		return esc_url_raw( $origin . remove_query_arg( 'portaria_test', $uri ) );
+		return esc_url_raw( $origin . remove_query_arg( 'aibotpaywall_test', $uri ) );
 	}
 }

@@ -1,5 +1,5 @@
 <?php
-use Portaria\Catalog;
+use AIBotPaywall\Catalog;
 
 $chrome = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0 Safari/537.36';
 t_eq( null, Catalog::classify( $chrome ), 'browser is human' );

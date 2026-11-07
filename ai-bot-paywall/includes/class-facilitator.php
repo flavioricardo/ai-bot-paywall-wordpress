@@ -2,10 +2,10 @@
 /**
  * HTTP client for the configured x402 facilitator. Only called when a payment is presented.
  *
- * @package Portaria
+ * @package AIBotPaywall
  */
 
-namespace Portaria;
+namespace AIBotPaywall;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -26,7 +26,7 @@ final class Facilitator {
 				'redirection'         => 0,
 				'limit_response_size' => self::MAX_RESPONSE,
 				/** Lets a facilitator that needs authentication receive it. */
-				'headers'             => (array) apply_filters( 'portaria_facilitator_headers', array( 'Content-Type' => 'application/json' ), $path ),
+				'headers'             => (array) apply_filters( 'aibotpaywall_facilitator_headers', array( 'Content-Type' => 'application/json' ), $path ),
 				'body'                => (string) wp_json_encode( $body ),
 			)
 		);
@@ -90,7 +90,7 @@ final class Facilitator {
 					'timeout'             => 10,
 					'redirection'         => 0,
 					'limit_response_size' => 1048576,
-					'headers'             => (array) apply_filters( 'portaria_facilitator_headers', array(), '/supported' ),
+					'headers'             => (array) apply_filters( 'aibotpaywall_facilitator_headers', array(), '/supported' ),
 				)
 			)
 		);

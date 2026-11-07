@@ -12,7 +12,7 @@ add_filter(
 
 // Answers DNS questions without touching the network.
 add_filter(
-	'portaria_dns_ptr',
+	'aibotpaywall_dns_ptr',
 	static function ( $host, $ip ) {
 		$map = array(
 			'66.249.66.1' => 'crawl-66-249-66-1.googlebot.com',
@@ -25,7 +25,7 @@ add_filter(
 	2
 );
 add_filter(
-	'portaria_dns_forward',
+	'aibotpaywall_dns_forward',
 	static function ( $addresses, $host ) {
 		return 'crawl-66-249-66-1.googlebot.com' === $host ? array( '66.249.66.1' ) : array( '9.9.9.9' );
 	},
@@ -80,7 +80,7 @@ add_action(
 
 		switch ( $_GET['e2e'] ) {
 			case 'settings':
-				update_option( 'portaria_settings', array_replace( \Portaria\Settings::get(), (array) $body ), true );
+				update_option( 'aibotpaywall_settings', array_replace( \AIBotPaywall\Settings::get(), (array) $body ), true );
 				break;
 			case 'option':
 				foreach ( (array) $body as $name => $value ) {
@@ -88,16 +88,16 @@ add_action(
 				}
 				break;
 			case 'reset':
-				$wpdb->query( "DELETE FROM {$wpdb->prefix}portaria_daily" );
-				$wpdb->query( "DELETE FROM {$wpdb->prefix}portaria_payments" );
-				$wpdb->query( "DELETE FROM {$wpdb->options} WHERE option_name LIKE '\\_transient\\_portaria%' OR option_name LIKE '\\_transient\\_timeout\\_portaria%'" );
+				$wpdb->query( "DELETE FROM {$wpdb->prefix}aibotpaywall_daily" );
+				$wpdb->query( "DELETE FROM {$wpdb->prefix}aibotpaywall_payments" );
+				$wpdb->query( "DELETE FROM {$wpdb->options} WHERE option_name LIKE '\\_transient\\_aibotpaywall%' OR option_name LIKE '\\_transient\\_timeout\\_aibotpaywall%'" );
 				break;
 			case 'dump':
 				$out = array(
-					'funnel'   => \Portaria\Store::funnel( 30 ),
-					'bots'     => \Portaria\Store::bots( 30 ),
-					'payments' => \Portaria\Store::recent_payments( 50 ),
-					'settings' => \Portaria\Settings::get(),
+					'funnel'   => \AIBotPaywall\Store::funnel( 30 ),
+					'bots'     => \AIBotPaywall\Store::bots( 30 ),
+					'payments' => \AIBotPaywall\Store::recent_payments( 50 ),
+					'settings' => \AIBotPaywall\Settings::get(),
 					'wp'       => get_bloginfo( 'version' ),
 					'php'      => PHP_VERSION,
 				);
@@ -122,41 +122,41 @@ add_action(
 				require_once ABSPATH . 'wp-admin/includes/file.php';
 				require_once ABSPATH . 'wp-admin/includes/plugin.php';
 				$path = get_home_path() . '.htaccess';
-				file_put_contents( $path, \Portaria\Cache_Compat::litespeed_block( array( 'GPTBot' ) ) . "# BEGIN WordPress\nkeep\n# END WordPress\n" );
+				file_put_contents( $path, \AIBotPaywall\Cache_Compat::litespeed_block( array( 'GPTBot' ) ) . "# BEGIN WordPress\nkeep\n# END WordPress\n" );
 				// LiteSpeed is absent here, so sync removes the block just as deactivation must.
-				deactivate_plugins( 'portaria-bots/portaria-bots.php' );
+				deactivate_plugins( 'ai-bot-paywall/ai-bot-paywall.php' );
 				$after = (string) file_get_contents( $path );
 				$out   = array(
-					'htaccess_block_after_deactivate' => false !== strpos( $after, 'BEGIN Portaria' ),
+					'htaccess_block_after_deactivate' => false !== strpos( $after, 'BEGIN AI Bot Paywall' ),
 					'user_rules_kept'                 => false !== strpos( $after, 'keep' ),
 				);
 				if ( ! defined( 'WP_UNINSTALL_PLUGIN' ) ) {
-					define( 'WP_UNINSTALL_PLUGIN', 'portaria-bots/portaria-bots.php' );
+					define( 'WP_UNINSTALL_PLUGIN', 'ai-bot-paywall/ai-bot-paywall.php' );
 				}
-				include WP_PLUGIN_DIR . '/portaria-bots/uninstall.php';
+				include WP_PLUGIN_DIR . '/ai-bot-paywall/uninstall.php';
 				wp_cache_flush();
-				$out['tables']   = array_values( array_filter( array_map( static function ( $t ) { return $t; }, (array) $wpdb->get_col( "SHOW TABLES LIKE '%portaria%'" ) ) ) );
-				$out['settings'] = get_option( 'portaria_settings' );
-				$out['cron']     = wp_next_scheduled( 'portaria_daily_event' );
+				$out['tables']   = array_values( array_filter( array_map( static function ( $t ) { return $t; }, (array) $wpdb->get_col( "SHOW TABLES LIKE '%aibotpaywall%'" ) ) ) );
+				$out['settings'] = get_option( 'aibotpaywall_settings' );
+				$out['cron']     = wp_next_scheduled( 'aibotpaywall_daily_event' );
 				break;
 			case 'selftest':
-				$out = \Portaria\Cache_Compat::run_self_test();
+				$out = \AIBotPaywall\Cache_Compat::run_self_test();
 				break;
 			case 'rocket_ua':
 				$out = array( 'agents' => apply_filters( 'rocket_cache_reject_ua', array() ) );
 				break;
 			case 'refresh':
-				\Portaria\Identity::refresh_ranges();
-				\Portaria\Identity::refresh_signature_keys();
-				\Portaria\Rates::refresh();
+				\AIBotPaywall\Identity::refresh_ranges();
+				\AIBotPaywall\Identity::refresh_signature_keys();
+				\AIBotPaywall\Rates::refresh();
 				$out = array(
-					'ranges' => array_map( 'count', (array) get_option( 'portaria_ip_ranges', array() ) ),
-					'keys'   => array_map( 'count', (array) get_option( 'portaria_signature_keys', array() ) ),
-					'rate'   => \Portaria\Rates::usd_brl(),
+					'ranges' => array_map( 'count', (array) get_option( 'aibotpaywall_ip_ranges', array() ) ),
+					'keys'   => array_map( 'count', (array) get_option( 'aibotpaywall_signature_keys', array() ) ),
+					'rate'   => \AIBotPaywall\Rates::usd_brl(),
 				);
 				break;
 			case 'facilitator':
-				$out = \Portaria\Facilitator::check( \Portaria\Settings::network() );
+				$out = \AIBotPaywall\Facilitator::check( \AIBotPaywall\Settings::network() );
 				break;
 		}
 

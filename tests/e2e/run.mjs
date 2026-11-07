@@ -83,13 +83,13 @@ try {
 	await visit(POST, { ua: GOOGLEBOT, ip: '6.6.6.7' });
 	d = await dump();
 	t.ok(bot(d, 'googlebot', 'fake'), 'PTR on the right domain fails when forward lookup disagrees');
-	await control('option', { portaria_ip_ranges: { gptbot: ['132.196.86.0/24'] } });
+	await control('option', { aibotpaywall_ip_ranges: { gptbot: ['132.196.86.0/24'] } });
 	await visit(POST, { ua: GPTBOT, ip: '132.196.86.5' });
 	await visit(POST, { ua: GPTBOT, ip: '5.5.5.5' });
 	d = await dump();
 	t.ok(bot(d, 'gptbot', 'verified'), 'GPTBot inside published range is verified');
 	t.ok(bot(d, 'gptbot', 'fake'), 'GPTBot outside published range is fake');
-	await control('option', { portaria_ip_ranges: null });
+	await control('option', { aibotpaywall_ip_ranges: null });
 	await control('reset');
 	await visit(POST, { ua: GPTBOT, ip: '5.5.5.5' });
 	d = await dump();
@@ -335,12 +335,12 @@ try {
 	res = await visit('/premium-other/', { ua: SEARCHBOT, ip: '5.5.5.5' });
 	t.eq(res.status, 200, 'path rule stops at segment boundary');
 	await fresh({ bot_rules: { gptbot: { action: 'allow', price: '' } } });
-	await control('option', { portaria_ip_ranges: { gptbot: ['132.196.86.0/24'] } });
+	await control('option', { aibotpaywall_ip_ranges: { gptbot: ['132.196.86.0/24'] } });
 	res = await visit(POST, { ua: GPTBOT, ip: '132.196.86.5' });
 	t.eq(res.status, 200, 'bot rule frees the real bot');
 	res = await visit(POST, { ua: GPTBOT, ip: '5.5.5.5' });
 	t.eq(res.status, 402, 'bot rule does not free an impostor');
-	await control('option', { portaria_ip_ranges: null });
+	await control('option', { aibotpaywall_ip_ranges: null });
 	await fresh({ content_rules: 'category:news charge 0.09' });
 	res = await visit(SINGLE, { ua: SEARCHBOT, ip: '5.5.5.5' });
 	t.eq(decode(res.headers.get('payment-required')).accepts[0].amount, '90000', 'category rule');
@@ -348,7 +348,7 @@ try {
 	res = await visit(SINGLE, { ua: SEARCHBOT, ip: '5.5.5.5' });
 	t.eq(res.status, 403, 'post type rule');
 
-	t.section('Site behind a proxy nobody told Portaria about');
+	t.section('Site behind a proxy nobody told AI Bot Paywall about');
 	await fresh({ client_ip_header: '' });
 	res = await visit(POST, { ua: GOOGLEBOT, headers: { 'X-Forwarded-For': '66.249.66.1' } });
 	t.eq(res.status, 200, 'real Googlebot is not charged for a missing setting');
@@ -356,18 +356,18 @@ try {
 	t.ok(bot(d, 'googlebot', 'unknown'), 'marked unknown, not fake');
 	res = await visit(POST, { ua: GOOGLEBOT });
 	t.eq(res.status, 402, 'no proxy signs: a failed check still means fake');
-	res = await visit('/wp-admin/admin.php?page=portaria', { ua: CHROME });
+	res = await visit('/wp-admin/admin.php?page=ai-bot-paywall', { ua: CHROME });
 	await fresh({ client_ip_header: 'direct' });
 	res = await visit(POST, { ua: GOOGLEBOT, headers: { 'X-Forwarded-For': '66.249.66.1' } });
 	t.eq(res.status, 402, 'owner said no proxy: a spoofed header gains nothing');
 	await control('settings', { client_ip_header: 'X-Real-IP' });
 
 	t.section('Reais');
-	await control('option', { portaria_usd_brl: null });
+	await control('option', { aibotpaywall_usd_brl: null });
 	await fresh({ currency: 'BRL', default_price: '0.05' });
 	res = await visit(POST, { ua: GPTBOT, ip: '5.5.5.5' });
 	t.eq(res.status, 200, 'no exchange rate yet: not charged rather than guessed');
-	await control('option', { portaria_usd_brl: { rate: 5, date: '2026-11-05' } });
+	await control('option', { aibotpaywall_usd_brl: { rate: 5, date: '2026-11-05' } });
 	res = await visit(POST, { ua: GPTBOT, ip: '5.5.5.5' });
 	t.eq(decode(res.headers.get('payment-required')).accepts[0].amount, '10000', 'R$ 0.05 at 5.00 is 0.01 USDC');
 	await control('settings', { currency: 'USD', default_price: '0.01' });
@@ -377,7 +377,7 @@ try {
 	const { privateKey, publicKey } = generateKeyPairSync('ed25519');
 	const x = publicKey.export({ format: 'jwk' }).x;
 	const keyid = createHash('sha256').update(`{"crv":"Ed25519","kty":"OKP","x":"${x}"}`).digest('base64url');
-	await control('option', { portaria_signature_keys: { 'chatgpt.com': { [keyid]: Buffer.from(x, 'base64url').toString('base64') } } });
+	await control('option', { aibotpaywall_signature_keys: { 'chatgpt.com': { [keyid]: Buffer.from(x, 'base64url').toString('base64') } } });
 	const signedRequest = (key = privateKey, authority = new URL(base).host) => {
 		const now = Math.floor(Date.now() / 1000);
 		const agent = '"https://chatgpt.com"';
@@ -404,9 +404,9 @@ try {
 	await fresh({ mode: 'monitor' });
 	const token = (await dump()).settings.test_token;
 	t.ok(/^[a-f0-9]{32}$/.test(token), 'private token generated on activation');
-	res = await visit('/?portaria_test=wrong', { ua: 'curl/8' });
+	res = await visit('/?aibotpaywall_test=wrong', { ua: 'curl/8' });
 	t.eq(res.status, 200, 'wrong token is an ordinary page');
-	const testUrl = `${base}/?portaria_test=${token}`;
+	const testUrl = `${base}/?aibotpaywall_test=${token}`;
 	res = await visit(testUrl, { ua: 'curl/8' });
 	t.eq(res.status, 402, 'test URL charges even in Monitor mode');
 	t.ok(!res.headers.get('payment-required').includes(token) && !decode(res.headers.get('payment-required')).resource.url.includes(token), 'challenge does not echo the private token');
@@ -438,8 +438,8 @@ try {
 	t.ok(agents.includes('(.*)GPTBot(.*)') && agents.includes('(.*)Screaming\\sFrog(.*)'), 'bypass on: tokens added to WP Rocket with its wildcards');
 	t.ok(!agents.includes('(.*)Googlebot(.*)'), 'search engines stay cached');
 	await control('option', { e2e_fake_cache: null });
-	res = await visit(POST, { ua: 'Mozilla/5.0 PortariaSelfTest/00000000000000000000000000000000' });
-	t.eq(res.headers.get('x-portaria-check'), null, 'self-test header needs the live token');
+	res = await visit(POST, { ua: 'Mozilla/5.0 AIBotPaywallSelfTest/00000000000000000000000000000000' });
+	t.eq(res.headers.get('x-ai-bot-paywall-check'), null, 'self-test header needs the live token');
 
 	t.section('Facilitator check');
 	check = await control('facilitator');
@@ -447,7 +447,7 @@ try {
 
 	t.section('Admin screens and forms');
 	await fresh({ mode: 'monitor' });
-	const anon = await visit('/wp-admin/admin.php?page=portaria');
+	const anon = await visit('/wp-admin/admin.php?page=ai-bot-paywall');
 	t.eq(anon.status, 302, 'admin needs login');
 	const login = await fetch(`${base}/wp-login.php`, {
 		method: 'POST',
@@ -459,7 +459,7 @@ try {
 	t.ok(cookie.includes('wordpress_logged_in'), 'logged in');
 	const admin = (url, init = {}) => fetch(base + url, { redirect: 'manual', ...init, headers: { Cookie: cookie, 'User-Agent': CHROME, ...(init.headers ?? {}) } });
 	const page = async (tab) => {
-		const r = await admin(`/wp-admin/admin.php?page=portaria&tab=${tab}`);
+		const r = await admin(`/wp-admin/admin.php?page=ai-bot-paywall&tab=${tab}`);
 		return { status: r.status, html: await r.text() };
 	};
 	for (const tab of ['dashboard', 'rules', 'settings', 'diagnostics']) {
@@ -475,8 +475,8 @@ try {
 	const settingsHtml = (await page('settings')).html;
 	const post = (fields) => admin('/wp-admin/admin-post.php', { method: 'POST', headers: { 'Content-Type': 'application/x-www-form-urlencoded' }, body: new URLSearchParams(fields) });
 	const base_fields = (extra) => ({
-		action: 'portaria_save_settings',
-		_wpnonce: nonce(settingsHtml, 'portaria_save_settings'),
+		action: 'aibotpaywall_save_settings',
+		_wpnonce: nonce(settingsHtml, 'aibotpaywall_save_settings'),
 		wallet: WALLET,
 		network: 'base-sepolia',
 		facilitator: facilitator.url,
@@ -511,8 +511,8 @@ try {
 
 	const rulesHtml = (await page('rules')).html;
 	res = await post({
-		action: 'portaria_save_rules',
-		_wpnonce: nonce(rulesHtml, 'portaria_save_rules'),
+		action: 'aibotpaywall_save_rules',
+		_wpnonce: nonce(rulesHtml, 'aibotpaywall_save_rules'),
 		default_price: '0.03',
 		currency: 'USD',
 		'policies[ai_training][action]': 'block',
@@ -545,7 +545,7 @@ try {
 	const dash2 = (await page('dashboard')).html;
 	t.ok(dash2.includes('US$'), 'dashboard shows money');
 	t.ok(dash2.includes('sepolia.basescan.org/tx/0x'), 'dashboard links the transaction');
-	const exportUrl = dash2.match(/href="([^"]*portaria_export[^"]*)"/)[1].replaceAll('&#038;', '&').replaceAll('&amp;', '&');
+	const exportUrl = dash2.match(/href="([^"]*aibotpaywall_export[^"]*)"/)[1].replaceAll('&#038;', '&').replaceAll('&amp;', '&');
 	res = await fetch(exportUrl, { headers: { Cookie: cookie } });
 	const csv = await res.text();
 	t.ok(csv.startsWith('created_at_utc'), 'CSV export works');

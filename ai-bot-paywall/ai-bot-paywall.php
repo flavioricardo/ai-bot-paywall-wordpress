@@ -1,7 +1,7 @@
 <?php
 /**
- * Plugin Name:       Portaria: AI Bot Ledger and x402 Paywall
- * Plugin URI:        https://github.com/flavioricardo/portaria-bots
+ * Plugin Name:       AI Bot Paywall: See, Verify and Charge Bots with x402
+ * Plugin URI:        https://github.com/flavioricardo/ai-bot-paywall
  * Description:       See every bot that reads your site, tell real crawlers from fake ones, and charge the ones that can pay through the x402 protocol. Starts in Monitor mode: nothing changes until you decide.
  * Version:           0.1.0
  * Requires at least: 6.5
@@ -9,25 +9,25 @@
  * Author:            Flávio Ricardo
  * License:           GPL-2.0-or-later
  * License URI:       https://www.gnu.org/licenses/gpl-2.0.html
- * Text Domain:       portaria-bots
+ * Text Domain:       ai-bot-paywall
  * Domain Path:       /languages
  *
- * @package Portaria
+ * @package AIBotPaywall
  */
 
-namespace Portaria;
+namespace AIBotPaywall;
 
 defined( 'ABSPATH' ) || exit;
 
 const VERSION = '0.1.0';
 const FILE    = __FILE__;
 
-foreach ( array( 'catalog', 'net', 'rules', 'x402', 'web-bot-auth', 'settings', 'store', 'identity', 'facilitator', 'rates', 'payment', 'gate', 'cache-compat', 'admin', 'admin-actions' ) as $portaria_class ) {
-	require_once __DIR__ . '/includes/class-' . $portaria_class . '.php';
+foreach ( array( 'catalog', 'net', 'rules', 'x402', 'web-bot-auth', 'settings', 'store', 'identity', 'facilitator', 'rates', 'payment', 'gate', 'cache-compat', 'admin', 'admin-actions' ) as $aibotpaywall_class ) {
+	require_once __DIR__ . '/includes/class-' . $aibotpaywall_class . '.php';
 }
-unset( $portaria_class );
+unset( $aibotpaywall_class );
 
-const CRON_HOOK = 'portaria_daily_event';
+const CRON_HOOK = 'aibotpaywall_daily_event';
 
 /** Sets up tables, defaults and scheduled work. Never changes how the site responds. */
 function activate(): void {
@@ -67,7 +67,7 @@ add_action( CRON_HOOK, __NAMESPACE__ . '\\daily' );
 add_action(
 	'init',
 	static function () {
-		load_plugin_textdomain( 'portaria-bots', false, dirname( plugin_basename( FILE ) ) . '/languages' );
+		load_plugin_textdomain( 'ai-bot-paywall', false, dirname( plugin_basename( FILE ) ) . '/languages' );
 	}
 );
 

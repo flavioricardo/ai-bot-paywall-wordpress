@@ -2,10 +2,10 @@
 /**
  * Handles admin form posts. Each handler checks capability and nonce first.
  *
- * @package Portaria
+ * @package AIBotPaywall
  */
 
-namespace Portaria;
+namespace AIBotPaywall;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -13,19 +13,19 @@ final class Admin_Actions {
 
 	public static function init(): void {
 		foreach ( array( 'save_rules', 'save_settings', 'self_test', 'check_facilitator', 'refresh_data', 'regenerate_token', 'export' ) as $action ) {
-			add_action( 'admin_post_portaria_' . $action, array( __CLASS__, $action ) );
+			add_action( 'admin_post_aibotpaywall_' . $action, array( __CLASS__, $action ) );
 		}
 	}
 
 	private static function authorize( string $action ): void {
 		if ( ! current_user_can( 'manage_options' ) ) {
-			wp_die( esc_html__( 'You are not allowed to do this.', 'portaria-bots' ), '', array( 'response' => 403 ) );
+			wp_die( esc_html__( 'You are not allowed to do this.', 'ai-bot-paywall' ), '', array( 'response' => 403 ) );
 		}
 		check_admin_referer( $action );
 	}
 
 	private static function notice( string $type, string $text ): void {
-		$key       = 'portaria_notices_' . get_current_user_id();
+		$key       = 'aibotpaywall_notices_' . get_current_user_id();
 		$notices   = get_transient( $key );
 		$notices   = is_array( $notices ) ? $notices : array();
 		$notices[] = array( $type, $text );
@@ -33,7 +33,7 @@ final class Admin_Actions {
 	}
 
 	public static function print_notices(): void {
-		$key     = 'portaria_notices_' . get_current_user_id();
+		$key     = 'aibotpaywall_notices_' . get_current_user_id();
 		$notices = get_transient( $key );
 		if ( ! is_array( $notices ) ) {
 			return;
@@ -56,14 +56,14 @@ final class Admin_Actions {
 	}
 
 	public static function save_rules(): void {
-		self::authorize( 'portaria_save_rules' );
+		self::authorize( 'aibotpaywall_save_rules' );
 		$settings = Settings::get();
 
 		$price = trim( sanitize_text_field( (string) self::field( 'default_price' ) ) );
 		if ( Rules::valid_price( $price ) ) {
 			$settings['default_price'] = $price;
 		} else {
-			self::notice( 'error', __( 'The default price was not changed: use a positive number with up to six decimals, like 0.01.', 'portaria-bots' ) );
+			self::notice( 'error', __( 'The default price was not changed: use a positive number with up to six decimals, like 0.01.', 'ai-bot-paywall' ) );
 		}
 		$settings['currency'] = 'BRL' === self::field( 'currency' ) ? 'BRL' : 'USD';
 
@@ -83,7 +83,7 @@ final class Admin_Actions {
 		}
 		$settings['bot_rules'] = $bot_rules;
 		if ( $invalid_price ) {
-			self::notice( 'warning', __( 'Some invalid prices were cleared. Those rules now use the default price.', 'portaria-bots' ) );
+			self::notice( 'warning', __( 'Some invalid prices were cleared. Those rules now use the default price.', 'ai-bot-paywall' ) );
 		}
 
 		$text                      = sanitize_textarea_field( (string) self::field( 'content_rules' ) );
@@ -91,11 +91,11 @@ final class Admin_Actions {
 		$parsed                    = Rules::parse_content_rules( $text );
 		if ( array() !== $parsed['errors'] ) {
 			/* translators: %s: rule lines that could not be read. */
-			self::notice( 'warning', sprintf( __( 'These content rules were not understood and are being ignored: %s', 'portaria-bots' ), implode( ' | ', $parsed['errors'] ) ) );
+			self::notice( 'warning', sprintf( __( 'These content rules were not understood and are being ignored: %s', 'ai-bot-paywall' ), implode( ' | ', $parsed['errors'] ) ) );
 		}
 
 		Settings::save( $settings );
-		self::notice( 'success', __( 'Rules saved.', 'portaria-bots' ) );
+		self::notice( 'success', __( 'Rules saved.', 'ai-bot-paywall' ) );
 		self::back( 'rules' );
 	}
 
@@ -118,7 +118,7 @@ final class Admin_Actions {
 	}
 
 	public static function save_settings(): void {
-		self::authorize( 'portaria_save_settings' );
+		self::authorize( 'aibotpaywall_save_settings' );
 		$settings = Settings::get();
 		$previous = ! empty( $settings['cache_bypass'] );
 
@@ -142,14 +142,14 @@ final class Admin_Actions {
 		if ( '' === $wallet || X402::is_address( $wallet ) ) {
 			$settings['wallet'] = $wallet;
 		} else {
-			self::notice( 'error', __( 'That wallet was not saved: an address starts with 0x and has 40 more letters and numbers.', 'portaria-bots' ) );
+			self::notice( 'error', __( 'That wallet was not saved: an address starts with 0x and has 40 more letters and numbers.', 'ai-bot-paywall' ) );
 		}
 
 		$facilitator = esc_url_raw( trim( (string) self::field( 'facilitator' ) ) );
 		if ( Settings::valid_facilitator( $facilitator ) ) {
 			$settings['facilitator'] = $facilitator;
 		} else {
-			self::notice( 'error', __( 'That facilitator was not saved: it needs an https address.', 'portaria-bots' ) );
+			self::notice( 'error', __( 'That facilitator was not saved: it needs an https address.', 'ai-bot-paywall' ) );
 		}
 
 		$mode = 'active' === self::field( 'mode' ) ? 'active' : 'monitor';
@@ -157,7 +157,7 @@ final class Admin_Actions {
 		// failed identity checks, which a fake search engine could exploit.
 		if ( 'active' === $mode && ( ! X402::is_address( (string) $settings['wallet'] ) || ! $settings['ack_ai'] || '' === $settings['client_ip_header'] ) ) {
 			$mode = 'monitor';
-			self::notice( 'error', __( 'Still in Monitor mode: Active mode needs a valid wallet, the confirmation checkbox and a choice for the client IP header.', 'portaria-bots' ) );
+			self::notice( 'error', __( 'Still in Monitor mode: Active mode needs a valid wallet, the confirmation checkbox and a choice for the client IP header.', 'ai-bot-paywall' ) );
 		}
 		$settings['mode'] = $mode;
 
@@ -169,33 +169,33 @@ final class Admin_Actions {
 		if ( null === Rates::usd_brl() ) {
 			Rates::refresh();
 		}
-		self::notice( 'success', __( 'Settings saved.', 'portaria-bots' ) );
+		self::notice( 'success', __( 'Settings saved.', 'ai-bot-paywall' ) );
 		self::back( 'settings' );
 	}
 
 	public static function self_test(): void {
-		self::authorize( 'portaria_self_test' );
+		self::authorize( 'aibotpaywall_self_test' );
 		Cache_Compat::run_self_test();
 		self::back( 'diagnostics' );
 	}
 
 	public static function check_facilitator(): void {
-		self::authorize( 'portaria_check_facilitator' );
-		set_transient( 'portaria_facilitator_check', Facilitator::check( Settings::network() ), 5 * MINUTE_IN_SECONDS );
+		self::authorize( 'aibotpaywall_check_facilitator' );
+		set_transient( 'aibotpaywall_facilitator_check', Facilitator::check( Settings::network() ), 5 * MINUTE_IN_SECONDS );
 		self::back( 'diagnostics' );
 	}
 
 	public static function refresh_data(): void {
-		self::authorize( 'portaria_refresh_data' );
+		self::authorize( 'aibotpaywall_refresh_data' );
 		Identity::refresh_ranges();
 		Identity::refresh_signature_keys();
 		Rates::refresh();
-		self::notice( 'success', __( 'Verification data updated.', 'portaria-bots' ) );
+		self::notice( 'success', __( 'Verification data updated.', 'ai-bot-paywall' ) );
 		self::back( 'diagnostics' );
 	}
 
 	public static function regenerate_token(): void {
-		self::authorize( 'portaria_regenerate_token' );
+		self::authorize( 'aibotpaywall_regenerate_token' );
 		$settings               = Settings::get();
 		$settings['test_token'] = bin2hex( random_bytes( 16 ) );
 		Settings::save( $settings );
@@ -203,9 +203,9 @@ final class Admin_Actions {
 	}
 
 	public static function export(): void {
-		self::authorize( 'portaria_export' );
+		self::authorize( 'aibotpaywall_export' );
 		header( 'Content-Type: text/csv; charset=utf-8' );
-		header( 'Content-Disposition: attachment; filename="portaria-payments.csv"' );
+		header( 'Content-Disposition: attachment; filename="aibotpaywall-payments.csv"' );
 
 		$out = fopen( 'php://output', 'w' );
 		fputcsv( $out, array( 'created_at_utc', 'kind', 'status', 'bot', 'path', 'amount_usdc', 'network', 'payer', 'transaction' ) );

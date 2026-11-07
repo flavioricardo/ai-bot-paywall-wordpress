@@ -2,12 +2,12 @@
 /**
  * Known crawlers and User-Agent classification. No WordPress dependency.
  *
- * @package Portaria
+ * @package AIBotPaywall
  */
 
-namespace Portaria;
+namespace AIBotPaywall;
 
-defined( 'ABSPATH' ) || defined( 'PORTARIA_TESTING' ) || exit;
+defined( 'ABSPATH' ) || defined( 'AI_BOT_PAYWALL_TESTING' ) || exit;
 
 final class Catalog {
 

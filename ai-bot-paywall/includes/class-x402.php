@@ -2,13 +2,13 @@
 /**
  * x402 protocol messages (v2 and v1, exact scheme, EIP-3009). No WordPress dependency.
  *
- * @package Portaria
+ * @package AIBotPaywall
  * @see https://github.com/x402-foundation/x402/tree/main/specs
  */
 
-namespace Portaria;
+namespace AIBotPaywall;
 
-defined( 'ABSPATH' ) || defined( 'PORTARIA_TESTING' ) || exit;
+defined( 'ABSPATH' ) || defined( 'AI_BOT_PAYWALL_TESTING' ) || exit;
 
 final class X402 {
 

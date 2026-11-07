@@ -1,6 +1,6 @@
 <?php
 // Minimal test runner: no framework, every assertion prints only on failure.
-define( 'PORTARIA_TESTING', true );
+define( 'AI_BOT_PAYWALL_TESTING', true );
 error_reporting( E_ALL );
 ini_set( 'display_errors', '1' );
 
@@ -17,7 +17,7 @@ function t_eq( $expected, $actual, string $label ): void {
 	echo "FAIL {$label}\n  expected: " . var_export( $expected, true ) . "\n  actual:   " . var_export( $actual, true ) . "\n";
 }
 
-$dir = dirname( __DIR__, 2 ) . '/portaria-bots/includes/';
+$dir = dirname( __DIR__, 2 ) . '/ai-bot-paywall/includes/';
 foreach ( glob( $dir . 'class-*.php' ) as $file ) {
 	if ( preg_match( '/class-(catalog|net|rules|x402|web-bot-auth|cache-compat|admin-actions)\.php$/', $file ) ) {
 		require_once $file;

@@ -2,16 +2,16 @@
 /**
  * Plugin settings: one option, validated on the way in.
  *
- * @package Portaria
+ * @package AIBotPaywall
  */
 
-namespace Portaria;
+namespace AIBotPaywall;
 
 defined( 'ABSPATH' ) || exit;
 
 final class Settings {
 
-	const OPTION = 'portaria_settings';
+	const OPTION = 'aibotpaywall_settings';
 
 	/** @var array<string,mixed>|null */
 	private static $cache = null;
@@ -71,7 +71,7 @@ final class Settings {
 
 	/** Networks offered to the owner. Add a token or chain through this filter. */
 	public static function networks(): array {
-		return (array) apply_filters( 'portaria_networks', X402::networks() );
+		return (array) apply_filters( 'aibotpaywall_networks', X402::networks() );
 	}
 
 	/** @return array<string,string> The configured network. */

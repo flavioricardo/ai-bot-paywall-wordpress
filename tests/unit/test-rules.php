@@ -1,5 +1,5 @@
 <?php
-use Portaria\Rules;
+use AIBotPaywall\Rules;
 
 $settings = array(
 	'default_price' => '0.01',

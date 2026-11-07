@@ -2,10 +2,10 @@
 /**
  * Decides whether a bot is who it claims to be.
  *
- * @package Portaria
+ * @package AIBotPaywall
  */
 
-namespace Portaria;
+namespace AIBotPaywall;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -16,8 +16,8 @@ final class Identity {
 	const UNKNOWN  = 'unknown';
 	const CLAIMED  = 'claimed';
 
-	const RANGES_OPTION = 'portaria_ip_ranges';
-	const KEYS_OPTION   = 'portaria_signature_keys';
+	const RANGES_OPTION = 'aibotpaywall_ip_ranges';
+	const KEYS_OPTION   = 'aibotpaywall_signature_keys';
 
 	/** New reverse DNS lookups allowed per minute, so fake bots cannot stall PHP workers. */
 	const DNS_BUDGET = 30;
@@ -106,7 +106,7 @@ final class Identity {
 		}
 
 		// Daily-rotated key: this cache cannot be used to recover visitor IPs.
-		$cache_key = 'portaria_rdns_' . substr( hash_hmac( 'sha256', $ip, wp_salt( 'auth' ) . gmdate( 'Ymd' ) ), 0, 32 );
+		$cache_key = 'aibotpaywall_rdns_' . substr( hash_hmac( 'sha256', $ip, wp_salt( 'auth' ) . gmdate( 'Ymd' ) ), 0, 32 );
 		$cached    = get_transient( $cache_key );
 		if ( self::VERIFIED === $cached || self::FAKE === $cached ) {
 			return $cached;
@@ -132,7 +132,7 @@ final class Identity {
 	 */
 	private static function reverse_dns_matches( string $ip, array $suffixes ): bool {
 		/** Lets tests and unusual hosts supply DNS answers. Return a host or false. */
-		$host = apply_filters( 'portaria_dns_ptr', null, $ip );
+		$host = apply_filters( 'aibotpaywall_dns_ptr', null, $ip );
 		if ( null === $host ) {
 			$host = gethostbyaddr( $ip );
 		}
@@ -141,7 +141,7 @@ final class Identity {
 		}
 
 		/** Return the list of IPs a host resolves to. */
-		$addresses = apply_filters( 'portaria_dns_forward', null, $host );
+		$addresses = apply_filters( 'aibotpaywall_dns_forward', null, $host );
 		if ( null === $addresses ) {
 			$addresses = (array) gethostbynamel( $host );
 			if ( false !== strpos( $ip, ':' ) ) {
@@ -191,7 +191,7 @@ final class Identity {
 		}
 
 		update_option( self::RANGES_OPTION, $ranges, false );
-		update_option( 'portaria_ranges_updated', time(), false );
+		update_option( 'aibotpaywall_ranges_updated', time(), false );
 	}
 
 	/** @return string[]|null Prefixes, or null when the download failed. */
@@ -253,7 +253,7 @@ final class Identity {
 final class Budget {
 
 	public static function take( string $name, int $limit ): bool {
-		$key  = 'portaria_budget_' . $name . '_' . gmdate( 'YmdHi' );
+		$key  = 'aibotpaywall_budget_' . $name . '_' . gmdate( 'YmdHi' );
 		$used = (int) get_transient( $key );
 		if ( $used >= $limit ) {
 			return false;

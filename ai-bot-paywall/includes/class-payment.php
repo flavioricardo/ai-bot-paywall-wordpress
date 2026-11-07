@@ -6,10 +6,10 @@
  * in a buffer, settle, deliver. Nobody is charged for a page that failed to render,
  * and nobody receives content when settlement fails.
  *
- * @package Portaria
+ * @package AIBotPaywall
  */
 
-namespace Portaria;
+namespace AIBotPaywall;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -47,7 +47,7 @@ final class Payment {
 			'url'         => Gate::request_url(),
 			'mime'        => (string) $request['mime'],
 			/* translators: %s: site name. */
-			'description' => sprintf( __( 'Automated access to %s', 'portaria-bots' ), wp_specialchars_decode( get_bloginfo( 'name' ), ENT_QUOTES ) ),
+			'description' => sprintf( __( 'Automated access to %s', 'ai-bot-paywall' ), wp_specialchars_decode( get_bloginfo( 'name' ), ENT_QUOTES ) ),
 		);
 		$is_live  = 'live' === $request['kind'];
 
@@ -248,6 +248,6 @@ final class Payment {
 			define( 'DONOTCACHEPAGE', true );
 		}
 		nocache_headers();
-		do_action( 'litespeed_control_set_nocache', 'portaria: bot-specific response' );
+		do_action( 'litespeed_control_set_nocache', 'ai-bot-paywall: bot-specific response' );
 	}
 }

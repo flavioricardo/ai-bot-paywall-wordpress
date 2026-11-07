@@ -1,6 +1,6 @@
-// Pays a Portaria test URL with the official x402 client. Moves real money on mainnet:
+// Pays an AI Bot Paywall test URL with the official x402 client. Moves real money on mainnet:
 // use a dedicated wallet holding only a few cents, or Base Sepolia.
-//   PAY_TEST_PRIVATE_KEY=0x... node tools/pay-test.mjs "https://site/?portaria_test=TOKEN"
+//   PAY_TEST_PRIVATE_KEY=0x... node tools/pay-test.mjs "https://site/?aibotpaywall_test=TOKEN"
 import { wrapFetchWithPayment, x402Client } from '@x402/fetch';
 import { ExactEvmScheme } from '@x402/evm';
 import { privateKeyToAccount } from 'viem/accounts';

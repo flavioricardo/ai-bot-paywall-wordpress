@@ -3,13 +3,13 @@
  * Web Bot Auth: verifies RFC 9421 HTTP Message Signatures from known bots.
  * No WordPress dependency; the Ed25519 check is injected.
  *
- * @package Portaria
+ * @package AIBotPaywall
  * @see https://datatracker.ietf.org/doc/draft-ietf-webbotauth-httpsig-protocol/
  */
 
-namespace Portaria;
+namespace AIBotPaywall;
 
-defined( 'ABSPATH' ) || defined( 'PORTARIA_TESTING' ) || exit;
+defined( 'ABSPATH' ) || defined( 'AI_BOT_PAYWALL_TESTING' ) || exit;
 
 final class Web_Bot_Auth {
 

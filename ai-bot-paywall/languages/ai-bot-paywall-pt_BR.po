@@ -1,6 +1,6 @@
 msgid ""
 msgstr ""
-"Project-Id-Version: Portaria\n"
+"Project-Id-Version: AI Bot Paywall\n"
 "Language: pt_BR\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -16,8 +16,8 @@ msgstr "%s visitas de bots falsos"
 msgid "402 responses"
 msgstr "Respostas 402"
 
-msgid "A cache answered before Portaria ran: bots on cached pages are not counted and do not pay."
-msgstr "Um cache respondeu antes da Portaria: bots em páginas em cache não são contados e não pagam."
+msgid "A cache answered before AI Bot Paywall ran: bots on cached pages are not counted and do not pay."
+msgstr "Um cache respondeu antes do AI Bot Paywall: bots em páginas em cache não são contados e não pagam."
 
 msgid "AI agents acting for a person"
 msgstr "Agentes de IA agindo por uma pessoa"
@@ -61,8 +61,8 @@ msgstr "Bots sempre pagam em USDC. Preço em reais é convertido pela cotação 
 msgid "Bots and payments"
 msgstr "Bots e pagamentos"
 
-msgid "Bots are reaching Portaria. They can be counted and charged."
-msgstr "Os bots estão chegando à Portaria. Podem ser contados e cobrados."
+msgid "Bots are reaching AI Bot Paywall. They can be counted and charged."
+msgstr "Os bots estão chegando ao AI Bot Paywall. Podem ser contados e cobrados."
 
 msgid "Bots then reach PHP, which uses more server resources on sites with heavy crawling. Search engines stay cached."
 msgstr "Os bots passam a chegar ao PHP, o que usa mais recursos do servidor em sites muito rastreados. Buscadores continuam no cache."
@@ -187,8 +187,8 @@ msgstr "Cliente pagante"
 msgid "Base Sepolia (test network)"
 msgstr "Base Sepolia (rede de teste)"
 
-msgid "Your site seems to be behind a proxy or CDN, so Portaria cannot check bot addresses. Fake bots show as Unknown, and fake search engines read for free, until you choose the client IP header. %s"
-msgstr "Seu site parece estar atrás de um proxy ou CDN, então a Portaria não consegue conferir o endereço dos bots. Bots falsos aparecem como Desconhecido, e buscadores falsos leem de graça, até você escolher o cabeçalho de IP do cliente. %s"
+msgid "Your site seems to be behind a proxy or CDN, so AI Bot Paywall cannot check bot addresses. Fake bots show as Unknown, and fake search engines read for free, until you choose the client IP header. %s"
+msgstr "Seu site parece estar atrás de um proxy ou CDN, então o AI Bot Paywall não consegue conferir o endereço dos bots. Bots falsos aparecem como Desconhecido, e buscadores falsos leem de graça, até você escolher o cabeçalho de IP do cliente. %s"
 
 msgid "Open settings"
 msgstr "Abrir configurações"
@@ -232,8 +232,8 @@ msgstr "Pagamentos concluídos"
 msgid "Pending"
 msgstr "Pendente"
 
-msgid "Portaria counts automated visits per day. It does not store IP addresses or User-Agent strings, and it does not record human visitors. When a client pays through x402, its public wallet address and transaction hash are stored as a payment record."
-msgstr "A Portaria conta visitas automatizadas por dia. Não guarda endereços IP nem User-Agents e não registra visitantes humanos. Quando um cliente paga via x402, o endereço público da carteira e o hash da transação ficam guardados como registro de pagamento."
+msgid "AI Bot Paywall counts automated visits per day. It does not store IP addresses or User-Agent strings, and it does not record human visitors. When a client pays through x402, its public wallet address and transaction hash are stored as a payment record."
+msgstr "O AI Bot Paywall conta visitas automatizadas por dia. Não guarda endereços IP nem User-Agents e não registra visitantes humanos. Quando um cliente paga via x402, o endereço público da carteira e o hash da transação ficam guardados como registro de pagamento."
 
 msgid "Price"
 msgstr "Preço"
@@ -241,8 +241,8 @@ msgstr "Preço"
 msgid "Proves the entrance works, in any mode. Pay this private URL with any x402 client, using a wallet of your own. It charges the default price and is recorded apart from real traffic."
 msgstr "Prova que a entrada funciona, em qualquer modo. Pague esta URL privada com qualquer cliente x402, usando uma carteira sua. Ela cobra o preço padrão e fica registrada à parte do tráfego real."
 
-msgid "Public address that receives USDC directly. Portaria never holds funds. Never paste a private key or seed phrase here."
-msgstr "Endereço público que recebe USDC diretamente. A Portaria nunca guarda dinheiro. Nunca cole aqui uma chave privada ou frase-semente."
+msgid "Public address that receives USDC directly. AI Bot Paywall never holds funds. Never paste a private key or seed phrase here."
+msgstr "Endereço público que recebe USDC diretamente. O AI Bot Paywall nunca guarda dinheiro. Nunca cole aqui uma chave privada ou frase-semente."
 
 msgid "Published IP lists: %1$d bots, updated %2$s"
 msgstr "Listas públicas de IP: %1$d bots, atualizadas em %2$s"
@@ -343,8 +343,8 @@ msgstr "O facilitator não aceita a rede selecionada."
 msgid "The facilitator supports the selected network."
 msgstr "O facilitator aceita a rede selecionada."
 
-msgid "The major AI crawlers do not pay per page yet. Each charge stays on record for when they do. Portaria does not promise income from bots."
-msgstr "Os grandes crawlers de IA ainda não pagam por página. Cada cobrança fica registrada para quando pagarem. A Portaria não promete renda com bots."
+msgid "The major AI crawlers do not pay per page yet. Each charge stays on record for when they do. AI Bot Paywall does not promise income from bots."
+msgstr "Os grandes crawlers de IA ainda não pagam por página. Cada cobrança fica registrada para quando pagarem. O AI Bot Paywall não promete renda com bots."
 
 msgid "The test could not reach this site from the server. Some hosts block these loopback requests, so this says nothing about your cache."
 msgstr "O teste não conseguiu acessar o site a partir do servidor. Algumas hospedagens bloqueiam esse tipo de requisição, então isso não diz nada sobre seu cache."

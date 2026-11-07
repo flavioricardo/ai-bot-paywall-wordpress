@@ -58,7 +58,7 @@ export async function startFacilitator() {
 
 /** Boots WordPress with the plugin mounted and activated. */
 export async function startWordPress({ port, php = '8.3', wp = 'latest' }) {
-	const dir = mkdtempSync(path.join(tmpdir(), 'portaria-e2e-'));
+	const dir = mkdtempSync(path.join(tmpdir(), 'aibotpaywall-e2e-'));
 	const blueprintPath = path.join(dir, 'blueprint.json');
 	writeFileSync(
 		blueprintPath,
@@ -67,8 +67,8 @@ export async function startWordPress({ port, php = '8.3', wp = 'latest' }) {
 			preferredVersions: { php, wp },
 			steps: [
 				{ step: 'setSiteOptions', options: { permalink_structure: '/%postname%/', blogname: 'E2E Site' } },
-				{ step: 'writeFile', path: '/wordpress/wp-content/mu-plugins/portaria-e2e.php', data: readFileSync(path.join(root, 'tests/e2e/mu-plugin.php'), 'utf8') },
-				{ step: 'activatePlugin', pluginPath: 'portaria-bots/portaria-bots.php' },
+				{ step: 'writeFile', path: '/wordpress/wp-content/mu-plugins/aibotpaywall-e2e.php', data: readFileSync(path.join(root, 'tests/e2e/mu-plugin.php'), 'utf8') },
+				{ step: 'activatePlugin', pluginPath: 'ai-bot-paywall/ai-bot-paywall.php' },
 			],
 		}),
 	);
@@ -76,7 +76,7 @@ export async function startWordPress({ port, php = '8.3', wp = 'latest' }) {
 	const bin = path.join(root, 'node_modules/@wp-playground/cli/wp-playground.js');
 	const child = spawn(
 		process.execPath,
-		[bin, 'server', '--port', String(port), '--php', php, '--wp', wp, '--workers', '2', '--define-bool', 'DISABLE_WP_CRON', 'true', '--mount-dir', path.join(root, 'portaria-bots'), '/wordpress/wp-content/plugins/portaria-bots', '--blueprint', blueprintPath, '--verbosity', 'quiet'],
+		[bin, 'server', '--port', String(port), '--php', php, '--wp', wp, '--workers', '2', '--define-bool', 'DISABLE_WP_CRON', 'true', '--mount-dir', path.join(root, 'ai-bot-paywall'), '/wordpress/wp-content/plugins/ai-bot-paywall', '--blueprint', blueprintPath, '--verbosity', 'quiet'],
 		{ cwd: dir, stdio: ['ignore', 'pipe', 'pipe'] },
 	);
 	let log = '';

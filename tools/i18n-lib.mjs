@@ -4,9 +4,9 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 export const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
-export const plugin = path.join(root, 'portaria-bots');
-export const poFile = path.join(plugin, 'languages', 'portaria-bots-pt_BR.po');
-export const moFile = path.join(plugin, 'languages', 'portaria-bots-pt_BR.mo');
+export const plugin = path.join(root, 'ai-bot-paywall');
+export const poFile = path.join(plugin, 'languages', 'ai-bot-paywall-pt_BR.po');
+export const moFile = path.join(plugin, 'languages', 'ai-bot-paywall-pt_BR.mo');
 
 function phpFiles(dir) {
 	return readdirSync(dir, { withFileTypes: true }).flatMap((entry) => {
@@ -19,7 +19,7 @@ function phpFiles(dir) {
 /** Strings passed to WordPress translation functions, with the text domain. */
 export function extractStrings() {
 	const strings = new Set();
-	const call = /\b(?:__|_e|esc_html__|esc_html_e|esc_attr__|esc_attr_e)\(\s*'((?:[^'\\]|\\.)*)'\s*,\s*'portaria-bots'\s*\)/g;
+	const call = /\b(?:__|_e|esc_html__|esc_html_e|esc_attr__|esc_attr_e)\(\s*'((?:[^'\\]|\\.)*)'\s*,\s*'ai-bot-paywall'\s*\)/g;
 	for (const file of phpFiles(plugin)) {
 		for (const match of readFileSync(file, 'utf8').matchAll(call)) {
 			strings.add(match[1].replace(/\\'/g, "'").replace(/\\\\/g, '\\'));

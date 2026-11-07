@@ -1,4 +1,4 @@
-# Portaria: registro de bots e cobrança x402 para WordPress
+# AI Bot Paywall: registro de bots e cobrança x402 para WordPress
 
 Status: aprovado pelo Flávio via `/goal` em 2026-11-06 ("siga até o final, com
 code review e fix"). Decisões marcadas "(Claude)" são escolhas do implementador,
@@ -53,7 +53,7 @@ Catálogo próprio por User-Agent. Classes: `search`, `social`, `service`
 (sempre liberadas), `ai_training`, `ai_search`, `ai_agent`, `seo`, `script`
 (controladas por política). Navegador sem assinatura de pagamento é humano e
 nunca é tocado. Humano logado, admin, robots, sitemap, 404 e OPTIONS nunca passam
-pela portaria. POST e outros métodos passam: o WordPress renderiza a mesma página
+pelo gate. POST e outros métodos passam: o WordPress renderiza a mesma página
 para eles, então ficar só em GET deixaria um desvio aberto.
 
 ### Identidade
@@ -98,13 +98,13 @@ cliente. Chamadas ao facilitator têm orçamento por minuto contra abuso.
 - Bots conhecidos entram em `rocket_cache_reject_ua` no WP Rocket.
 - No LiteSpeed, bloco no `.htaccess` antes do LSCACHE, removido ao desativar.
 - Diagnóstico: requisição real com User-Agent de bot e token. Se a resposta não
-  trouxer o token, o cache está furando a portaria, seja qual for o cache.
+  trouxer o token, o cache está furando o gate, seja qual for o cache.
 - 402 sai com `no-store`; toda resposta decidida define `DONOTCACHEPAGE`.
 
 ### Dados
 
-- `portaria_daily`: agregado por dia, bot e identidade.
-- `portaria_payments`: pagamentos, com status, payer público e hash.
+- `aibotpaywall_daily`: agregado por dia, bot e identidade.
+- `aibotpaywall_payments`: pagamentos, com status, payer público e hash.
 - Retenção configurável; sem IP, sem User-Agent cru.
 
 ## Serviços externos

@@ -1,5 +1,5 @@
 {
-  "name": "portaria-bots",
+  "name": "ai-bot-paywall",
   "private": true,
   "type": "module",
   "license": "GPL-2.0-or-later",
@@ -8,7 +8,7 @@
     "test:e2e": "node tests/e2e/run.mjs",
     "test:interop": "node tests/e2e/interop-real-facilitator.mjs",
     "build:i18n": "node tools/build-i18n.mjs",
-    "build:zip": "node -e \"require('fs').mkdirSync('build',{recursive:true})\" && git archive --format=zip --prefix=portaria-bots/ -o build/portaria-bots.zip HEAD:portaria-bots"
+    "build:zip": "node -e \"require('fs').mkdirSync('build',{recursive:true})\" && git archive --format=zip --prefix=ai-bot-paywall/ -o build/ai-bot-paywall.zip HEAD:ai-bot-paywall"
   },
   "devDependencies": {
     "@php-wasm/node": "^3.1.62",

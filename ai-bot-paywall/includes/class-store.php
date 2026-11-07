@@ -2,10 +2,10 @@
 /**
  * Database access. Stores daily aggregates and payments, never IPs or raw User-Agents.
  *
- * @package Portaria
+ * @package AIBotPaywall
  */
 
-namespace Portaria;
+namespace AIBotPaywall;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -18,16 +18,16 @@ final class Store {
 
 	private static function daily(): string {
 		global $wpdb;
-		return $wpdb->prefix . 'portaria_daily';
+		return $wpdb->prefix . 'aibotpaywall_daily';
 	}
 
 	private static function payments(): string {
 		global $wpdb;
-		return $wpdb->prefix . 'portaria_payments';
+		return $wpdb->prefix . 'aibotpaywall_payments';
 	}
 
 	public static function maybe_upgrade(): void {
-		if ( get_option( 'portaria_db_version' ) === self::DB_VERSION ) {
+		if ( get_option( 'aibotpaywall_db_version' ) === self::DB_VERSION ) {
 			return;
 		}
 		global $wpdb;
@@ -68,7 +68,7 @@ final class Store {
 				KEY kind_status (kind,status)
 			) {$charset};"
 		);
-		update_option( 'portaria_db_version', self::DB_VERSION, false );
+		update_option( 'aibotpaywall_db_version', self::DB_VERSION, false );
 	}
 
 	/**
