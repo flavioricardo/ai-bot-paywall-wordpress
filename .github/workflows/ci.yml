@@ -1,0 +1,48 @@
+# Origem: flavioricardo/claude-config (templates/github/ci.yml)
+# Enquanto a linha acima existir, scripts/rollout-base.sh sobrescreve este
+# arquivo com o template. Precisa ajustar pro projeto (env var no build etc.)?
+# Apague a linha "Origem" — vira CI próprio e o rollout não toca mais.
+# Check "ci" do fluxo PR → review → merge. Sem branch protection (plano Free),
+# quem barra merge vermelho é a regra base: conferir o check antes de mergear.
+name: CI
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  ci:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      # STATE.md só com fato vivo (regra base). Seção de histórico = erro;
+      # tamanho é aviso até o arquivo ser enxugado — depois, trocar pra erro.
+      - name: STATE.md
+        run: |
+          [ -f STATE.md ] || exit 0
+          hist='^#+[[:space:]]*[^[:alnum:]]*(resolvid|feito|hist.{1,2}rico|done|resolved)|^#+.*\b(resolvidas|resolvidos|resolved)\b|^(resolvidas|resolvidos|feito|done)\b[^:]*:[[:space:]]*$'
+          if grep -niE "$hist" STATE.md; then
+            echo "::error file=STATE.md::Seção de histórico no STATE.md — pendência fechada se apaga, histórico mora no git log."
+            exit 1
+          fi
+          n=$(wc -l < STATE.md)
+          [ "$n" -le 150 ] || echo "::warning file=STATE.md::STATE.md com $n linhas (limite 150) — enxugar."
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      # npm ou pnpm, pelo lockfile. Outro gerenciador falha alto em vez de
+      # passar sem rodar nada.
+      - name: lint, typecheck, test, build
+        run: |
+          if [ -f package-lock.json ]; then pm=npm; npm ci
+          elif [ -f pnpm-lock.yaml ]; then pm=pnpm; corepack enable; pnpm install --frozen-lockfile
+          elif [ -f package.json ]; then echo "::error::package.json sem package-lock.json/pnpm-lock.yaml — CI só suporta npm e pnpm"; exit 1
+          else echo "sem package.json, nada a rodar"; exit 0
+          fi
+          for s in lint typecheck test build; do "$pm" run --if-present "$s"; done
