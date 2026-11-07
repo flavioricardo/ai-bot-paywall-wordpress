@@ -25,6 +25,6 @@
 
 ## Pendências
 
-- [ ] **Criar repo público e abrir PR de `feat/plugin-v1`**: `gh repo create flavioricardo/ai-bot-paywall --public`, depois incluir em `rollout-projects.txt` do claude-config e no `ROLLOUT_TOKEN` | [humano] aprovar publicação
+- [ ] **Criar repo público e abrir PR de `feat/plugin-v1`**: `gh repo create flavioricardo/ai-bot-paywall-wordpress --public`, depois incluir em `rollout-projects.txt` do claude-config e no `ROLLOUT_TOKEN` | [humano] aprovar publicação
 - [ ] **Testar num site real com WP Rocket ou LiteSpeed**: rodar Diagnóstico → Testar agora; se falhar, ajustar o padrão em `class-cache-compat.php` | [humano] precisa de site e licença
 - [ ] **Fazer pagamento real de centavos**: `PAY_TEST_PRIVATE_KEY=... node tools/pay-test.mjs "<URL de teste>"`, com carteira própria na Base | [humano] envolve dinheiro. Antes de enviar ao WordPress.org, confirmar termos e privacidade da PayAI (https://payai.network): os links antigos dão 404

@@ -1,7 +1,7 @@
 <?php
 /**
  * Plugin Name:       AI Bot Paywall: See, Verify and Charge Bots with x402
- * Plugin URI:        https://github.com/flavioricardo/ai-bot-paywall
+ * Plugin URI:        https://github.com/flavioricardo/ai-bot-paywall-wordpress
  * Description:       See every bot that reads your site, tell real crawlers from fake ones, and charge the ones that can pay through the x402 protocol. Starts in Monitor mode: nothing changes until you decide.
  * Version:           0.1.0
  * Requires at least: 6.5
