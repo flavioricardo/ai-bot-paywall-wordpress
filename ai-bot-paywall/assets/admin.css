@@ -1,0 +1,19 @@
+.aibotpaywall-top { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px; margin-top: 12px; }
+.aibotpaywall-top h2 { margin: 0; }
+.aibotpaywall-grid { display: grid; grid-template-columns: 2fr 1fr; gap: 12px; margin-top: 12px; }
+.aibotpaywall-box { background: #fff; border: 1px solid #c3c4c7; padding: 16px; margin-top: 12px; }
+.aibotpaywall-grid .aibotpaywall-box { margin-top: 0; }
+.aibotpaywall-box h3 { margin: 0 0 12px; font-size: 14px; }
+.aibotpaywall-step { display: flex; justify-content: space-between; gap: 12px; font-size: 13px; }
+.aibotpaywall-bar { height: 14px; background: #2271b1; margin: 3px 0 10px; }
+.aibotpaywall-big { font-size: 22px; font-weight: 600; line-height: 1.25; }
+.aibotpaywall-sub { color: #50575e; margin: 0 0 12px; }
+.aibotpaywall-ok { color: #00712e; font-weight: 600; }
+.aibotpaywall-bad { color: #b32d2e; font-weight: 600; }
+.aibotpaywall-rules { margin-bottom: 8px; }
+.aibotpaywall-inline { display: inline-block; margin: 4px 8px 0 0; }
+.aibotpaywall details summary { cursor: pointer; margin-bottom: 8px; }
+.aibotpaywall code { word-break: break-all; }
+@media (max-width: 782px) {
+	.aibotpaywall-grid { grid-template-columns: 1fr; }
+}
