@@ -57,7 +57,7 @@ AI Bot Paywall contacts these services. Nothing about your human visitors is eve
 
 = x402 facilitator =
 
-Verifies payments and submits them to the blockchain. By default, [PayAI](https://payai.network) at `facilitator.payai.network` ([documentation](https://docs.payai.network/introduction)). You can use any facilitator, including your own.
+Verifies payments and submits them to the blockchain. By default, [PayAI](https://payai.network) at `facilitator.payai.network` ([terms](https://payai.network/terms-of-service), [privacy](https://payai.network/privacy-policy)). You can use any facilitator, including your own.
 
 It receives the signed payment, your wallet address, the price and the page URL, and is contacted **only when a client presents a payment**, or when you press "Check facilitator".
 
