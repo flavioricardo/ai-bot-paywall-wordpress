@@ -1,0 +1,21 @@
+{
+  "name": "portaria-bots",
+  "private": true,
+  "type": "module",
+  "license": "GPL-2.0-or-later",
+  "scripts": {
+    "test": "node tests/run-unit.mjs && node tools/check-i18n.mjs",
+    "test:e2e": "node tests/e2e/run.mjs",
+    "test:interop": "node tests/e2e/interop-real-facilitator.mjs",
+    "build:i18n": "node tools/build-i18n.mjs",
+    "build:zip": "node tools/build-zip.mjs"
+  },
+  "devDependencies": {
+    "@php-wasm/node": "^3.1.62",
+    "@php-wasm/universal": "^3.1.62",
+    "@wp-playground/cli": "^3.1.62",
+    "@x402/evm": "^2.30.0",
+    "@x402/fetch": "^2.30.0",
+    "viem": "^2.57.16"
+  }
+}
