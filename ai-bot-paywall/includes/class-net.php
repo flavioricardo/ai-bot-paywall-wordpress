@@ -7,7 +7,7 @@
 
 namespace AIBotPaywall;
 
-defined( 'ABSPATH' ) || defined( 'AI_BOT_PAYWALL_TESTING' ) || exit;
+defined( 'ABSPATH' ) || exit;
 
 final class Net {
 
