@@ -26,7 +26,7 @@ final class Web_Bot_Auth {
 		if ( preg_match( '/"([^"]+)"/', $value, $m ) ) {
 			$value = $m[1];
 		}
-		$host = false !== strpos( $value, '://' ) ? (string) parse_url( $value, PHP_URL_HOST ) : $value;
+		$host = false !== strpos( $value, '://' ) ? (string) wp_parse_url( $value, PHP_URL_HOST ) : $value;
 		return 1 === preg_match( '/^[a-z0-9.-]{1,253}$/i', $host ) ? strtolower( $host ) : '';
 	}
 
