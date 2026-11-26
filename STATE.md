@@ -32,8 +32,6 @@
 
 ## Pendências
 
-- [ ] **Responder o review do WordPress.org**: e-mail "[WordPress Plugin Directory] Review in Progress: Botfare – AI Bot Paywall" de plugins@wordpress.org (1 a 10 dias); corrigir o que pedirem e subir o zip por "Upload updated" em https://wordpress.org/plugins/developers/add/. Depois de aprovado, publicar via SVN | [humano] e-mail chega pra ele
-
-- [ ] **Incluir o repo na automação de regras base**: adicionar `flavioricardo/ai-bot-paywall-wordpress` em `rollout-projects.txt` do claude-config e no `ROLLOUT_TOKEN` | [humano] token
-- [ ] **Testar num site real com WP Rocket ou LiteSpeed**: rodar Diagnóstico → Testar agora; se falhar, ajustar o padrão em `class-cache-compat.php` | [humano] precisa de site e licença
-- [ ] **Fazer pagamento real de centavos**: `PAY_TEST_PRIVATE_KEY=... node tools/pay-test.mjs "<URL de teste>"`, com carteira própria na Base | [humano] envolve dinheiro
+- [ ] **Responder o review do WordPress.org**: e-mail "[WordPress Plugin Directory] Review in Progress: Botfare – AI Bot Paywall" de plugins@wordpress.org (1 a 10 dias; envio e confirmação em 2026-11-26). Corrigir o que pedirem e subir o zip por "Upload updated" em https://wordpress.org/plugins/developers/add/. Depois de aprovado, publicar via SVN | [humano] e-mail chega pra ele
+- [ ] **Validar num site real**: instalar o zip num site com WP Rocket ou LiteSpeed; rodar Diagnóstico → Testar agora (se falhar, ajustar o padrão em `class-cache-compat.php`); depois pagar centavos com `PAY_TEST_PRIVATE_KEY=... node tools/pay-test.mjs "<URL de teste>"`, carteira própria na Base | [humano] precisa de site, licença e dinheiro
+- [ ] **Incluir o repo na automação de regras base**: dar acesso a `flavioricardo/ai-bot-paywall-wordpress` no PAT do `ROLLOUT_TOKEN` (https://github.com/settings/personal-access-tokens) e só então adicionar a linha em `rollout-projects.txt` do claude-config | [humano] token
