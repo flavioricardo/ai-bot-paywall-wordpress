@@ -3,16 +3,16 @@
  * USD/BRL exchange rate from Banco Central do Brasil (PTAX). Only fetched when the
  * owner shows or prices in reais.
  *
- * @package AIBotPaywall
+ * @package Botfare
  */
 
-namespace AIBotPaywall;
+namespace Botfare;
 
 defined( 'ABSPATH' ) || exit;
 
 final class Rates {
 
-	const OPTION = 'aibotpaywall_usd_brl';
+	const OPTION = 'botfare_usd_brl';
 
 	/** The rate, or null when none has been fetched yet. */
 	public static function usd_brl(): ?float {

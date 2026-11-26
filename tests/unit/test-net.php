@@ -1,5 +1,5 @@
 <?php
-use AIBotPaywall\Net;
+use Botfare\Net;
 
 t_eq( true, Net::ip_in_cidr( '132.196.86.10', '132.196.86.0/24' ), 'v4 in' );
 t_eq( false, Net::ip_in_cidr( '132.196.87.10', '132.196.86.0/24' ), 'v4 out' );

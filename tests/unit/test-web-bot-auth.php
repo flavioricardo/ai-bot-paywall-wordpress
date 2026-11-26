@@ -1,5 +1,5 @@
 <?php
-use AIBotPaywall\Web_Bot_Auth as W;
+use Botfare\Web_Bot_Auth as W;
 
 t_eq( 'chatgpt.com', W::agent_host( '"https://chatgpt.com"' ), 'quoted url' );
 t_eq( 'chatgpt.com', W::agent_host( 'sig1="https://ChatGPT.com/"' ), 'dictionary member' );

@@ -3,19 +3,19 @@
  * Full-page cache compatibility. A cache that serves HTML before PHP runs hides bots
  * from the gate: they are neither counted nor charged.
  *
- * @package AIBotPaywall
+ * @package Botfare
  */
 
-namespace AIBotPaywall;
+namespace Botfare;
 
 defined( 'ABSPATH' ) || exit;
 
 final class Cache_Compat {
 
-	const MARKER        = 'AI Bot Paywall';
-	const RESULT_OPTION = 'aibotpaywall_cache_check';
-	const TOKEN_KEY     = 'aibotpaywall_selftest_token';
-	const CHECK_HEADER  = 'X-AI-Bot-Paywall-Check';
+	const MARKER        = 'Botfare';
+	const RESULT_OPTION = 'botfare_cache_check';
+	const TOKEN_KEY     = 'botfare_selftest_token';
+	const CHECK_HEADER  = 'X-Botfare-Check';
 
 	public static function init(): void {
 		add_filter( 'rocket_cache_reject_ua', array( __CLASS__, 'add_rocket_user_agents' ) );
@@ -157,7 +157,7 @@ final class Cache_Compat {
 	 * @return bool Whether this request was the self-test.
 	 */
 	public static function answer_self_test( string $ua ): bool {
-		if ( ! preg_match( '#AIBotPaywallSelfTest/([a-f0-9]{32})#', $ua, $m ) ) {
+		if ( ! preg_match( '#BotfareSelfTest/([a-f0-9]{32})#', $ua, $m ) ) {
 			return false;
 		}
 		$token = get_transient( self::TOKEN_KEY );
@@ -191,7 +191,7 @@ final class Cache_Compat {
 		wp_remote_get( $url, $args + array( 'user-agent' => $browser ) );
 		$response = wp_remote_get(
 			$url,
-			$args + array( 'user-agent' => 'Mozilla/5.0 (compatible; GPTBot/1.3; +https://openai.com/gptbot) AIBotPaywallSelfTest/' . $token )
+			$args + array( 'user-agent' => 'Mozilla/5.0 (compatible; GPTBot/1.3; +https://openai.com/gptbot) BotfareSelfTest/' . $token )
 		);
 
 		delete_transient( self::TOKEN_KEY );

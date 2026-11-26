@@ -2,11 +2,11 @@
 /**
  * x402 protocol messages (v2 and v1, exact scheme, EIP-3009). No WordPress dependency.
  *
- * @package AIBotPaywall
+ * @package Botfare
  * @see https://github.com/x402-foundation/x402/tree/main/specs
  */
 
-namespace AIBotPaywall;
+namespace Botfare;
 
 defined( 'ABSPATH' ) || exit;
 

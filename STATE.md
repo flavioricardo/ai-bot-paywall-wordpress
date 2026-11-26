@@ -1,4 +1,4 @@
-# STATE — AI Bot Paywall (ai-bot-paywall)
+# STATE — Botfare (botfare-ai-bot-paywall)
 
 > **Convenção deste arquivo:** só fato vivo — o que é verdade hoje e o que está
 > aberto. Histórico de como chegamos aqui vive no `git log`. Ao fechar uma
@@ -9,7 +9,7 @@
 ## Status
 
 - **Fase:** primeira versão (0.1.0) completa e na `main`. Falta validar em site real.
-- **No ar:** repositório público `flavioricardo/ai-bot-paywall-wordpress`. Plugin ainda não enviado ao WordPress.org. Slug do plugin: `ai-bot-paywall`.
+- **No ar:** repositório público `flavioricardo/ai-bot-paywall-wordpress`. Plugin ainda não enviado ao WordPress.org. Slug do plugin: `botfare-ai-bot-paywall`.
 
 ## Decisões
 

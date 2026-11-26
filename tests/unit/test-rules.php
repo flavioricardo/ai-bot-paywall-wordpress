@@ -1,5 +1,5 @@
 <?php
-use AIBotPaywall\Rules;
+use Botfare\Rules;
 
 $settings = array(
 	'default_price' => '0.01',
