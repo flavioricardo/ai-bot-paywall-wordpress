@@ -1,6 +1,5 @@
 <?php
 // Minimal test runner: no framework, every assertion prints only on failure.
-define( 'AI_BOT_PAYWALL_TESTING', true );
 error_reporting( E_ALL );
 ini_set( 'display_errors', '1' );
 
