@@ -3,11 +3,11 @@
  * Web Bot Auth: verifies RFC 9421 HTTP Message Signatures from known bots.
  * No WordPress dependency; the Ed25519 check is injected.
  *
- * @package AIBotPaywall
+ * @package Botfare
  * @see https://datatracker.ietf.org/doc/draft-ietf-webbotauth-httpsig-protocol/
  */
 
-namespace AIBotPaywall;
+namespace Botfare;
 
 defined( 'ABSPATH' ) || exit;
 

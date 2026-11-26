@@ -2,10 +2,10 @@
 /**
  * Decides what happens to a bot request. No WordPress dependency.
  *
- * @package AIBotPaywall
+ * @package Botfare
  */
 
-namespace AIBotPaywall;
+namespace Botfare;
 
 defined( 'ABSPATH' ) || exit;
 

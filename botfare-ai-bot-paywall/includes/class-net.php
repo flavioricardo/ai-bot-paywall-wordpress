@@ -2,10 +2,10 @@
 /**
  * IP helpers. No WordPress dependency.
  *
- * @package AIBotPaywall
+ * @package Botfare
  */
 
-namespace AIBotPaywall;
+namespace Botfare;
 
 defined( 'ABSPATH' ) || exit;
 

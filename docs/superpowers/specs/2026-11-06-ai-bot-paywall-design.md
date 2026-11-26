@@ -1,4 +1,4 @@
-# AI Bot Paywall: registro de bots e cobrança x402 para WordPress
+# Botfare: registro de bots e cobrança x402 para WordPress
 
 Status: aprovado pelo Flávio via `/goal` em 2026-11-06 ("siga até o final, com
 code review e fix"). Decisões marcadas "(Claude)" são escolhas do implementador,
@@ -103,8 +103,8 @@ cliente. Chamadas ao facilitator têm orçamento por minuto contra abuso.
 
 ### Dados
 
-- `aibotpaywall_daily`: agregado por dia, bot e identidade.
-- `aibotpaywall_payments`: pagamentos, com status, payer público e hash.
+- `botfare_daily`: agregado por dia, bot e identidade.
+- `botfare_payments`: pagamentos, com status, payer público e hash.
 - Retenção configurável; sem IP, sem User-Agent cru.
 
 ## Serviços externos

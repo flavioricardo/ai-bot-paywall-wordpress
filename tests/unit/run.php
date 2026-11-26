@@ -16,7 +16,7 @@ function t_eq( $expected, $actual, string $label ): void {
 	echo "FAIL {$label}\n  expected: " . var_export( $expected, true ) . "\n  actual:   " . var_export( $actual, true ) . "\n";
 }
 
-$dir = dirname( __DIR__, 2 ) . '/ai-bot-paywall/includes/';
+$dir = dirname( __DIR__, 2 ) . '/botfare-ai-bot-paywall/includes/';
 foreach ( glob( $dir . 'class-*.php' ) as $file ) {
 	if ( preg_match( '/class-(catalog|net|rules|x402|web-bot-auth|cache-compat|admin-actions)\.php$/', $file ) ) {
 		require_once $file;

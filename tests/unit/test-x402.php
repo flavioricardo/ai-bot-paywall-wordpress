@@ -1,5 +1,5 @@
 <?php
-use AIBotPaywall\X402;
+use Botfare\X402;
 
 $net    = X402::networks()['base-sepolia'];
 $wallet = '0x209693Bc6afc0C5328bA36FaF03C514EF312287C';
