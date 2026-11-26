@@ -7,6 +7,11 @@ define( 'ABSPATH', '/tmp/' );
 $GLOBALS['t_pass'] = 0;
 $GLOBALS['t_fail'] = 0;
 
+// WordPress stand-ins for the few core helpers the pure classes call.
+function wp_parse_url( $url, $component = -1 ) {
+	return parse_url( $url, $component );
+}
+
 function t_eq( $expected, $actual, string $label ): void {
 	if ( $expected === $actual ) {
 		$GLOBALS['t_pass']++;

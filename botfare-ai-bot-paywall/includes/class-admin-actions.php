@@ -228,7 +228,7 @@ final class Admin_Actions {
 				)
 			);
 		}
-		fclose( $out );
+		// php://output needs no fclose(): PHP flushes and releases it on exit.
 		exit;
 	}
 
